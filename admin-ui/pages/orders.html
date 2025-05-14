@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>订单管理 - 场馆预约系统</title>
+    <!-- 引入字体和图标 -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css"
+    />
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <!-- 侧边栏 -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-primary"
+            >
+              <path
+                d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"
+              ></path>
+              <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+            <span>场馆预约系统</span>
+          </div>
+          <button class="sidebar-toggle">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+        <div class="sidebar-menu">
+          <a href="dashboard.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <div class="menu-text">控制台</div>
+          </a>
+
+          <div class="menu-category">场馆管理</div>
+
+          <a href="venues.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="menu-text">场馆列表</div>
+          </a>
+
+          <a href="categories.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-tags"></i>
+            </div>
+            <div class="menu-text">场馆分类</div>
+          </a>
+
+          <div class="menu-category">预约管理</div>
+
+          <a href="orders.html" class="menu-item active">
+            <div class="menu-icon">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="menu-text">订单管理</div>
+          </a>
+
+          <a href="bookings.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="menu-text">预约时段</div>
+          </a>
+
+          <div class="menu-category">用户管理</div>
+
+          <a href="users.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="menu-text">用户列表</div>
+          </a>
+
+          <a href="comments.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-comment-alt"></i>
+            </div>
+            <div class="menu-text">评价管理</div>
+          </a>
+
+          <a href="statistics.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <div class="menu-text">数据统计</div>
+          </a>
+
+          <div class="menu-category">系统设置</div>
+
+          <a href="notifications.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="menu-text">通知管理</div>
+          </a>
+
+          <a href="settings.html" class="menu-item">
+            <div class="menu-icon">
+              <i class="fas fa-cog"></i>
+            </div>
+            <div class="menu-text">系统设置</div>
+          </a>
+        </div>
+      </aside>
+
+      <!-- 主内容区域 -->
+      <main class="main-content">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+          <div class="header-title d-none d-md-block">订单管理</div>
+
+          <button class="btn d-md-none mobile-menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+
+          <div class="header-actions">
+            <div class="search-bar d-none d-md-block">
+              <i class="fas fa-search search-icon"></i>
+              <input
+                type="text"
+                class="search-input"
+                placeholder="搜索订单..."
+              />
+            </div>
+
+            <div class="notification-icon">
+              <i class="fas fa-bell"></i>
+              <div class="notification-badge">5</div>
+            </div>
+
+            <div class="settings-icon">
+              <i class="fas fa-cog"></i>
+            </div>
+
+            <div class="user-menu" data-toggle="dropdown">
+              <img
+                src="https://randomuser.me/api/portraits/men/1.jpg"
+                alt="用户头像"
+                class="user-avatar"
+              />
+              <div class="user-info">
+                <div class="user-name">管理员</div>
+                <div class="user-role">超级管理员</div>
+              </div>
+              <i class="fas fa-chevron-down dropdown-icon"></i>
+
+              <div class="dropdown-menu">
+                <a href="profile.html" class="dropdown-item">
+                  <i class="fas fa-user-circle mr-2"></i>
+                  <span>个人资料</span>
+                </a>
+                <a href="settings.html" class="dropdown-item">
+                  <i class="fas fa-cog mr-2"></i>
+                  <span>系统设置</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item" id="logoutBtn">
+                  <i class="fas fa-sign-out-alt mr-2"></i>
+                  <span>退出登录</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- 内容区域 -->
+        <div class="content">
+          <!-- 页面标题和操作 -->
+          <div
+            class="page-header d-flex justify-content-between align-items-center mb-4"
+          >
+            <h1 class="page-title">订单管理</h1>
+            <div class="page-actions">
+              <button class="btn btn-primary" id="exportBtn">
+                <i class="fas fa-file-export mr-2"></i>导出数据
+              </button>
+            </div>
+          </div>
+
+          <!-- 筛选和搜索 -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">订单状态</label>
+                  <select class="form-select" id="orderStatus">
+                    <option value="">全部状态</option>
+                    <option value="pending">待支付</option>
+                    <option value="paid">已支付</option>
+                    <option value="completed">已完成</option>
+                    <option value="canceled">已取消</option>
+                    <option value="refunded">已退款</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">场馆类型</label>
+                  <select class="form-select" id="venueType">
+                    <option value="">全部类型</option>
+                    <option value="basketball">篮球场</option>
+                    <option value="badminton">羽毛球场</option>
+                    <option value="tennis">网球场</option>
+                    <option value="swimming">游泳馆</option>
+                    <option value="gym">健身房</option>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">开始日期</label>
+                  <input type="date" class="form-control" id="startDate" />
+                </div>
+                <div class="col-md-3 mb-3">
+                  <label class="form-label">结束日期</label>
+                  <input type="date" class="form-control" id="endDate" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">关键词搜索</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="订单号/用户名/场馆名称"
+                    id="searchKeyword"
+                  />
+                </div>
+                <div
+                  class="col-md-6 d-flex align-items-end justify-content-end"
+                >
+                  <button
+                    class="btn btn-outline-primary mr-2"
+                    id="resetFilterBtn"
+                  >
+                    <i class="fas fa-redo mr-1"></i>重置
+                  </button>
+                  <button class="btn btn-primary" id="applyFilterBtn">
+                    <i class="fas fa-filter mr-1"></i>筛选
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 订单列表 -->
+          <div class="card mb-4">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h2 class="card-title">订单列表</h2>
+              <div>
+                <span class="text-muted mr-2"
+                  >共 <strong id="totalOrders">156</strong> 个订单</span
+                >
+                <span class="badge badge-success mr-1">已支付: 92</span>
+                <span class="badge badge-warning mr-1">待支付: 15</span>
+                <span class="badge badge-danger mr-1">已取消: 24</span>
+                <span class="badge badge-info">已退款: 25</span>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-container">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>订单号</th>
+                      <th>用户</th>
+                      <th>场馆信息</th>
+                      <th>预约时间</th>
+                      <th>订单金额</th>
+                      <th>订单状态</th>
+                      <th>创建时间</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>ORD20230615001</td>
+                      <td>张三 (ID: 10086)</td>
+                      <td>星动篮球馆 - A1场地</td>
+                      <td>2023-06-15 10:00-12:00</td>
+                      <td>¥160.00</td>
+                      <td><span class="badge badge-success">已支付</span></td>
+                      <td>2023-06-10 15:23:45</td>
+                      <td class="table-actions">
+                        <button
+                          class="btn btn-sm btn-outline-primary"
+                          onclick="viewOrderDetail('ORD20230615001')"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ORD20230614002</td>
+                      <td>李四 (ID: 10087)</td>
+                      <td>城市游泳中心 - 标准泳道</td>
+                      <td>2023-06-14 14:00-16:00</td>
+                      <td>¥120.00</td>
+                      <td><span class="badge badge-info">已完成</span></td>
+                      <td>2023-06-09 09:12:34</td>
+                      <td class="table-actions">
+                        <button
+                          class="btn btn-sm btn-outline-primary"
+                          onclick="viewOrderDetail('ORD20230614002')"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ORD20230613003</td>
+                      <td>王五 (ID: 10088)</td>
+                      <td>飞羽羽毛球馆 - 3号场地</td>
+                      <td>2023-06-13 18:00-20:00</td>
+                      <td>¥140.00</td>
+                      <td><span class="badge badge-warning">待支付</span></td>
+                      <td>2023-06-10 20:45:12</td>
+                      <td class="table-actions">
+                        <button
+                          class="btn btn-sm btn-outline-primary"
+                          onclick="viewOrderDetail('ORD20230613003')"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button
+                          class="btn btn-sm btn-outline-danger"
+                          onclick="cancelOrder('ORD20230613003')"
+                        >
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ORD20230612004</td>
+                      <td>赵六 (ID: 10089)</td>
+                      <td>力健健身中心 - 全天</td>
+                      <td>2023-06-12 全天</td>
+                      <td>¥200.00</td>
+                      <td><span class="badge badge-danger">已取消</span></td>
+                      <td>2023-06-08 18:30:22</td>
+                      <td class="table-actions">
+                        <button
+                          class="btn btn-sm btn-outline-primary"
+                          onclick="viewOrderDetail('ORD20230612004')"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>ORD20230611005</td>
+                      <td>钱七 (ID: 10090)</td>
+                      <td>阳光网球场 - 2号场地</td>
+                      <td>2023-06-11 09:00-11:00</td>
+                      <td>¥240.00</td>
+                      <td><span class="badge badge-info">已退款</span></td>
+                      <td>2023-06-07 10:11:33</td>
+                      <td class="table-actions">
+                        <button
+                          class="btn btn-sm btn-outline-primary"
+                          onclick="viewOrderDetail('ORD20230611005')"
+                        >
+                          <i class="fas fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="text-muted">显示 1 到 5，共 156 条记录</span>
+                </div>
+                <div class="pagination">
+                  <a href="#" class="pagination-link disabled">
+                    <i class="fas fa-chevron-left"></i>
+                  </a>
+                  <a href="#" class="pagination-link active">1</a>
+                  <a href="#" class="pagination-link">2</a>
+                  <a href="#" class="pagination-link">3</a>
+                  <span class="pagination-ellipsis">...</span>
+                  <a href="#" class="pagination-link">31</a>
+                  <a href="#" class="pagination-link">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 订单详情模态框 -->
+    <div class="modal" id="orderDetailModal">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">订单详情</h3>
+            <button type="button" class="close" data-dismiss="modal">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <h4>基本信息</h4>
+                <div class="mt-3">
+                  <p>
+                    <strong>订单号：</strong>
+                    <span id="detail-order-id">ORD20230615001</span>
+                  </p>
+                  <p>
+                    <strong>创建时间：</strong>
+                    <span id="detail-create-time">2023-06-10 15:23:45</span>
+                  </p>
+                  <p>
+                    <strong>订单状态：</strong>
+                    <span class="badge badge-success" id="detail-status"
+                      >已支付</span
+                    >
+                  </p>
+                  <p>
+                    <strong>支付方式：</strong>
+                    <span id="detail-payment-method">支付宝</span>
+                  </p>
+                  <p>
+                    <strong>订单金额：</strong>
+                    <span id="detail-amount">¥160.00</span>
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h4>用户信息</h4>
+                <div class="mt-3">
+                  <p>
+                    <strong>用户ID：</strong>
+                    <span id="detail-user-id">10086</span>
+                  </p>
+                  <p>
+                    <strong>用户名：</strong>
+                    <span id="detail-user-name">张三</span>
+                  </p>
+                  <p>
+                    <strong>手机号：</strong>
+                    <span id="detail-phone">138****5678</span>
+                  </p>
+                  <p>
+                    <strong>邮箱：</strong>
+                    <span id="detail-email">zh***@example.com</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <hr />
+            <div class="row mb-4">
+              <div class="col-md-12">
+                <h4>预约信息</h4>
+                <div class="mt-3">
+                  <p>
+                    <strong>场馆名称：</strong>
+                    <span id="detail-venue-name">星动篮球馆</span>
+                  </p>
+                  <p>
+                    <strong>场地信息：</strong>
+                    <span id="detail-court">A1场地</span>
+                  </p>
+                  <p>
+                    <strong>预约日期：</strong>
+                    <span id="detail-date">2023-06-15</span>
+                  </p>
+                  <p>
+                    <strong>预约时段：</strong>
+                    <span id="detail-time">10:00-12:00</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-md-12">
+                <h4>费用明细</h4>
+                <table class="table table-sm mt-3">
+                  <thead>
+                    <tr>
+                      <th>项目</th>
+                      <th>单价</th>
+                      <th>数量</th>
+                      <th>小计</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>场地使用费</td>
+                      <td>¥80.00/小时</td>
+                      <td>2小时</td>
+                      <td>¥160.00</td>
+                    </tr>
+                    <tr>
+                      <td>服务费</td>
+                      <td>¥0.00</td>
+                      <td>1</td>
+                      <td>¥0.00</td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" class="text-right">
+                        <strong>合计</strong>
+                      </td>
+                      <td><strong>¥160.00</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-md-12">
+                <h4>操作记录</h4>
+                <table class="table table-sm mt-3">
+                  <thead>
+                    <tr>
+                      <th>操作时间</th>
+                      <th>操作人</th>
+                      <th>操作类型</th>
+                      <th>备注</th>
+                    </tr>
+                  </thead>
+                  <tbody id="operation-logs">
+                    <tr>
+                      <td>2023-06-10 15:23:45</td>
+                      <td>用户(张三)</td>
+                      <td>创建订单</td>
+                      <td>-</td>
+                    </tr>
+                    <tr>
+                      <td>2023-06-10 15:25:30</td>
+                      <td>用户(张三)</td>
+                      <td>支付订单</td>
+                      <td>支付宝支付</td>
+                    </tr>
+                    <tr>
+                      <td>2023-06-10 15:26:05</td>
+                      <td>系统</td>
+                      <td>支付确认</td>
+                      <td>订单状态更新为已支付</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="w-100 d-flex justify-content-between">
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  id="refundBtn"
+                  style="display: none"
+                >
+                  <i class="fas fa-undo mr-1"></i>退款
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  id="cancelBtn"
+                  style="display: none"
+                >
+                  <i class="fas fa-times mr-1"></i>取消订单
+                </button>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-dismiss="modal"
+                >
+                  关闭
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="printOrderBtn"
+                >
+                  <i class="fas fa-print mr-1"></i>打印订单
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 引入脚本 -->
+    <script src="../js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // 退出登录处理
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (confirm("确定要退出系统吗？")) {
+              window.location.href = "login.html";
+            }
+          });
+        }
+
+        // 初始化日期选择器
+        const today = new Date();
+        const lastMonth = new Date();
+        lastMonth.setMonth(today.getMonth() - 1);
+
+        document.getElementById("startDate").valueAsDate = lastMonth;
+        document.getElementById("endDate").valueAsDate = today;
+
+        // 重置筛选条件
+        document
+          .getElementById("resetFilterBtn")
+          .addEventListener("click", function () {
+            document.getElementById("orderStatus").value = "";
+            document.getElementById("venueType").value = "";
+            document.getElementById("startDate").valueAsDate = lastMonth;
+            document.getElementById("endDate").valueAsDate = today;
+            document.getElementById("searchKeyword").value = "";
+          });
+
+        // 应用筛选
+        document
+          .getElementById("applyFilterBtn")
+          .addEventListener("click", function () {
+            alert("已应用筛选条件，实际应用中会重新加载数据");
+          });
+
+        // 导出数据
+        document
+          .getElementById("exportBtn")
+          .addEventListener("click", function () {
+            alert("开始导出数据，实际应用中会生成Excel文件");
+          });
+
+        // 初始化模态框
+        const modals = document.querySelectorAll(".modal");
+        const closeButtons = document.querySelectorAll(
+          '[data-dismiss="modal"]'
+        );
+
+        closeButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            modals.forEach((modal) => {
+              modal.classList.remove("show");
+            });
+            document.body.classList.remove("modal-open");
+          });
+        });
+
+        // 查看订单详情
+        window.viewOrderDetail = function (orderId) {
+          const modal = document.getElementById("orderDetailModal");
+          modal.classList.add("show");
+          document.body.classList.add("modal-open");
+
+          document.getElementById("detail-order-id").textContent = orderId;
+
+          // 根据订单状态显示不同的操作按钮
+          const statusElement = document.getElementById("detail-status");
+          const refundBtn = document.getElementById("refundBtn");
+          const cancelBtn = document.getElementById("cancelBtn");
+
+          if (statusElement.textContent === "已支付") {
+            refundBtn.style.display = "inline-block";
+            cancelBtn.style.display = "none";
+          } else if (statusElement.textContent === "待支付") {
+            refundBtn.style.display = "none";
+            cancelBtn.style.display = "inline-block";
+          } else {
+            refundBtn.style.display = "none";
+            cancelBtn.style.display = "none";
+          }
+        };
+
+        // 取消订单
+        window.cancelOrder = function (orderId) {
+          if (confirm(`确定要取消订单 ${orderId} 吗？`)) {
+            alert(`订单 ${orderId} 已取消`);
+          }
+        };
+
+        // 退款操作
+        document
+          .getElementById("refundBtn")
+          .addEventListener("click", function () {
+            const orderId =
+              document.getElementById("detail-order-id").textContent;
+            if (confirm(`确定要为订单 ${orderId} 办理退款吗？`)) {
+              alert(`订单 ${orderId} 已申请退款，等待处理`);
+              document.getElementById("detail-status").textContent =
+                "退款处理中";
+              document.getElementById("detail-status").className =
+                "badge badge-warning";
+            }
+          });
+
+        // 取消订单
+        document
+          .getElementById("cancelBtn")
+          .addEventListener("click", function () {
+            const orderId =
+              document.getElementById("detail-order-id").textContent;
+            if (confirm(`确定要取消订单 ${orderId} 吗？`)) {
+              alert(`订单 ${orderId} 已取消`);
+              document.getElementById("detail-status").textContent = "已取消";
+              document.getElementById("detail-status").className =
+                "badge badge-danger";
+            }
+          });
+
+        // 打印订单
+        document
+          .getElementById("printOrderBtn")
+          .addEventListener("click", function () {
+            alert("准备打印订单，实际应用中会调用打印功能");
+          });
+      });
+    </script>
+  </body>
+</html>

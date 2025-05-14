@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>活动中心 - 场馆预约系统</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <style>
+      .activity-tabs {
+        display: flex;
+        background-color: white;
+        border-bottom: 1px solid var(--gray-5);
+        position: sticky;
+        top: 88px;
+        z-index: 10;
+      }
+      .activity-tab {
+        flex: 1;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 14px;
+        color: var(--gray-1);
+        position: relative;
+      }
+      .activity-tab.active {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+      .activity-tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 3px;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+      }
+      .activity-container {
+        padding: 15px;
+      }
+      .banner-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+      .activity-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      .activity-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      .activity-image {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+      }
+      .activity-info {
+        padding: 15px;
+      }
+      .activity-status {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+      .activity-status.enrolling {
+        background-color: rgba(76, 217, 100, 0.1);
+        color: var(--success-color);
+      }
+      .activity-status.coming-soon {
+        background-color: rgba(0, 122, 255, 0.1);
+        color: var(--primary-color);
+      }
+      .activity-status.in-progress {
+        background-color: rgba(255, 149, 0, 0.1);
+        color: var(--warning-color);
+      }
+      .activity-status.ended {
+        background-color: rgba(142, 142, 147, 0.1);
+        color: var(--gray-1);
+      }
+      .activity-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-primary);
+      }
+      .activity-venue {
+        font-size: 13px;
+        color: var(--gray-1);
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+      }
+      .activity-venue i {
+        margin-right: 5px;
+        font-size: 12px;
+      }
+      .activity-time {
+        font-size: 13px;
+        color: var(--gray-1);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+      }
+      .activity-time i {
+        margin-right: 5px;
+        font-size: 12px;
+      }
+      .activity-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--gray-5);
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+      .activity-participants {
+        display: flex;
+        align-items: center;
+        color: var(--gray-1);
+        font-size: 13px;
+      }
+      .activity-participants i {
+        margin-right: 5px;
+        font-size: 12px;
+      }
+      .activity-action {
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .activity-action.disabled {
+        background-color: var(--gray-3);
+      }
+      .activity-category-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        padding-left: 10px;
+        border-left: 3px solid var(--primary-color);
+      }
+      .empty-activities {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        color: var(--gray-1);
+        text-align: center;
+        padding: 20px;
+      }
+      .empty-activities i {
+        font-size: 60px;
+        color: var(--gray-3);
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- iOS状态栏 -->
+    <div class="ios-status-bar">
+      <div class="time">9:41</div>
+      <div class="status-icons">
+        <i class="fas fa-signal"></i>
+        <i class="fas fa-wifi"></i>
+        <i class="fas fa-battery-full"></i>
+      </div>
+    </div>
+
+    <!-- iOS导航栏 -->
+    <div class="ios-nav-bar">
+      <div class="left-button" data-action="back" data-target="profile.html">
+        <i class="fas fa-chevron-left"></i> 返回
+      </div>
+      <div class="title">活动中心</div>
+      <div class="right-button"></div>
+    </div>
+
+    <!-- 活动标签页 -->
+    <div class="activity-tabs">
+      <div class="activity-tab active" data-target="all-activities">
+        全部活动
+      </div>
+      <div class="activity-tab" data-target="enrolling-activities">报名中</div>
+      <div class="activity-tab" data-target="my-activities">我的活动</div>
+    </div>
+
+    <div class="content">
+      <!-- 全部活动 -->
+      <div class="tab-content" id="all-activities">
+        <div class="activity-container">
+          <!-- 活动Banner -->
+          <img
+            src="../images/activity-banner.jpg"
+            alt="活动banner"
+            class="banner-image"
+          />
+
+          <!-- 推荐活动 -->
+          <h2 class="activity-category-title">推荐活动</h2>
+          <div class="activity-list">
+            <!-- 活动卡片1 -->
+            <div class="activity-card">
+              <img
+                src="../images/basketball-tournament.jpg"
+                alt="社区篮球赛"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status enrolling">报名中</span>
+                <h3 class="activity-title">星动社区篮球友谊赛</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  星动篮球馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-24 14:00-18:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 42/50
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    立即报名
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 活动卡片2 -->
+            <div class="activity-card">
+              <img
+                src="../images/yoga-class.jpg"
+                alt="瑜伽课程"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status enrolling">报名中</span>
+                <h3 class="activity-title">初夏瑜伽体验课</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  健康生活馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-20 10:00-12:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 18/30
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    立即报名
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 热门赛事 -->
+          <h2 class="activity-category-title" style="margin-top: 25px">
+            热门赛事
+          </h2>
+          <div class="activity-list">
+            <!-- 赛事卡片1 -->
+            <div class="activity-card">
+              <img
+                src="../images/tennis-tournament.jpg"
+                alt="网球锦标赛"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status coming-soon">即将开始</span>
+                <h3 class="activity-title">2023夏季网球锦标赛</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  翔宇网球馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-07-01 09:00-18:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 64/64 (已满)
+                  </div>
+                  <a
+                    href="activity_detail.html"
+                    class="activity-action disabled"
+                  >
+                    名额已满
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 赛事卡片2 -->
+            <div class="activity-card">
+              <img
+                src="../images/swimming-competition.jpg"
+                alt="游泳比赛"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status in-progress">进行中</span>
+                <h3 class="activity-title">青少年游泳挑战赛</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  蓝海游泳馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-15 至 2023-06-18
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    参赛人数: 120
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    查看详情
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 往期活动 -->
+          <h2 class="activity-category-title" style="margin-top: 25px">
+            往期活动
+          </h2>
+          <div class="activity-list">
+            <!-- 往期活动卡片 -->
+            <div class="activity-card">
+              <img
+                src="../images/badminton-event.jpg"
+                alt="羽毛球友谊赛"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status ended">已结束</span>
+                <h3 class="activity-title">春季羽毛球友谊赛</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  羽动体育馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-04-15 13:00-17:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    参与人数: 46
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    查看回顾
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 报名中活动 -->
+      <div class="tab-content" id="enrolling-activities" style="display: none">
+        <div class="activity-container">
+          <div class="activity-list">
+            <!-- 活动卡片1 -->
+            <div class="activity-card">
+              <img
+                src="../images/basketball-tournament.jpg"
+                alt="社区篮球赛"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status enrolling">报名中</span>
+                <h3 class="activity-title">星动社区篮球友谊赛</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  星动篮球馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-24 14:00-18:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 42/50
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    立即报名
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 活动卡片2 -->
+            <div class="activity-card">
+              <img
+                src="../images/yoga-class.jpg"
+                alt="瑜伽课程"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status enrolling">报名中</span>
+                <h3 class="activity-title">初夏瑜伽体验课</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  健康生活馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-20 10:00-12:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 18/30
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    立即报名
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- 活动卡片3 -->
+            <div class="activity-card">
+              <img
+                src="../images/football-match.jpg"
+                alt="足球比赛"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status enrolling">报名中</span>
+                <h3 class="activity-title">周末足球友谊赛</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  绿茵足球场
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-25 15:00-17:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 28/44
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    立即报名
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 我的活动 -->
+      <div class="tab-content" id="my-activities" style="display: none">
+        <div class="activity-container">
+          <!-- 如果用户有报名的活动 -->
+          <div class="activity-list">
+            <!-- 我的活动卡片 -->
+            <div class="activity-card">
+              <img
+                src="../images/yoga-class.jpg"
+                alt="瑜伽课程"
+                class="activity-image"
+              />
+              <div class="activity-info">
+                <span class="activity-status enrolling">已报名</span>
+                <h3 class="activity-title">初夏瑜伽体验课</h3>
+                <p class="activity-venue">
+                  <i class="fas fa-map-marker-alt"></i>
+                  健康生活馆
+                </p>
+                <p class="activity-time">
+                  <i class="far fa-calendar-alt"></i>
+                  2023-06-20 10:00-12:00
+                </p>
+                <div class="activity-stats">
+                  <div class="activity-participants">
+                    <i class="fas fa-users"></i>
+                    已报名: 18/30
+                  </div>
+                  <a href="activity_detail.html" class="activity-action">
+                    查看详情
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 如果用户没有报名任何活动，显示空状态 -->
+          <!-- 
+                <div class="empty-activities">
+                    <i class="far fa-calendar-times"></i>
+                    <p>您还没有报名任何活动</p>
+                    <p>快去发现感兴趣的活动吧！</p>
+                </div>
+                 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- iOS底部标签栏 -->
+    <div class="ios-tab-bar">
+      <a class="tab-item" data-target="home.html">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a class="tab-item" data-target="orders.html">
+        <i class="fas fa-calendar-alt"></i>
+        <span>订单</span>
+      </a>
+      <a class="tab-item active" data-target="profile.html">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // 标签页切换
+        const tabs = document.querySelectorAll(".activity-tab");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", function () {
+            // 移除所有活动状态
+            tabs.forEach((t) => t.classList.remove("active"));
+            tabContents.forEach((content) => (content.style.display = "none"));
+
+            // 设置当前标签为活动状态
+            this.classList.add("active");
+            const targetId = this.getAttribute("data-target");
+            document.getElementById(targetId).style.display = "block";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

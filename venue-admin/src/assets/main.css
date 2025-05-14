@@ -1,0 +1,200 @@
+/* 全局CSS变量 */
+:root {
+  --primary-color: #3f51b5;
+  --primary-dark: #303f9f;
+  --danger-color: #ef4444;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+}
+
+/* 基础样式重置 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--gray-900);
+  line-height: 1.5;
+}
+
+/* 文本颜色辅助类 */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-danger {
+  color: var(--danger-color);
+}
+
+/* 工具类 */
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+/* 自定义Element Plus主题 */
+.el-button--primary {
+  background-color: var(--primary-color);
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background-color: var(--primary-dark);
+}
+
+/* 全局样式 */
+
+/* 覆盖element-plus部分样式 */
+.el-card {
+  --el-card-padding: 15px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08) !important;
+}
+
+.el-card__header {
+  padding: 15px 20px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.el-table {
+  --el-table-border-color: #e8e8e8;
+  --el-table-header-bg-color: #fafafa;
+}
+
+.el-menu {
+  border-right: none !important;
+}
+
+/* 通用工具类 */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.p-15 {
+  padding: 15px;
+}
+
+.text-primary {
+  color: #409eff;
+}
+
+.text-success {
+  color: #67c23a;
+}
+
+.text-warning {
+  color: #e6a23c;
+}
+
+.text-danger {
+  color: #f56c6c;
+}
+
+.text-muted {
+  color: #909399;
+}
+
+.bg-primary {
+  background-color: #409eff;
+}
+
+.bg-success {
+  background-color: #67c23a;
+}
+
+.bg-warning {
+  background-color: #e6a23c;
+}
+
+.bg-danger {
+  background-color: #f56c6c;
+}
+
+.bg-light {
+  background-color: #f5f7fa;
+}
+
+/* 动画效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xcl.venueserver.mapper.BookingOrderMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.xcl.venueserver.entity.BookingOrder">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="venue_id" property="venueId"/>
+        <result column="booking_date" property="bookingDate"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="booking_type" property="bookingType"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="status" property="status"/>
+        <result column="remarks" property="remarks"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 订单详情结果映射 -->
+    <resultMap id="OrderDetailResultMap" type="com.xcl.venueserver.vo.BookingOrderVO">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="venue_id" property="venueId"/>
+        <result column="venue_name" property="venueName"/>
+        <result column="booking_date" property="bookingDate"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="booking_type" property="bookingType"/>
+        <result column="booking_type_name" property="bookingTypeName"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="status" property="status"/>
+        <result column="status_name" property="statusName"/>
+        <result column="remarks" property="remarks"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <collection property="facilities" column="id" select="com.xcl.venueserver.mapper.BookingFacilityMapper.getFacilitiesByOrderId"/>
+    </resultMap>
+
+    <!-- 分页查询预约订单 -->
+    <select id="pageBookingOrders" resultMap="OrderDetailResultMap">
+        SELECT
+            o.id, o.order_no, o.user_id, u.username, o.venue_id, v.name as venue_name,
+            o.booking_date, o.start_time, o.end_time, o.booking_type,
+            CASE o.booking_type
+                WHEN 1 THEN '包场预约'
+                WHEN 2 THEN '设施预约'
+                ELSE '未知'
+            END AS booking_type_name,
+            o.total_amount, o.status,
+            CASE o.status
+                WHEN 0 THEN '已取消'
+                WHEN 1 THEN '待支付'
+                WHEN 2 THEN '已预约'
+                WHEN 3 THEN '已完成'
+                ELSE '未知'
+            END AS status_name,
+            o.remarks, o.created_at, o.updated_at
+        FROM
+            booking_order o
+        LEFT JOIN
+            user u ON o.user_id = u.id
+        LEFT JOIN
+            venue v ON o.venue_id = v.id
+        <where>
+            <if test="userId != null">
+                AND o.user_id = #{userId}
+            </if>
+            <if test="venueId != null">
+                AND o.venue_id = #{venueId}
+            </if>
+            <if test="status != null">
+                AND o.status = #{status}
+            </if>
+            <if test="bookingType != null">
+                AND o.booking_type = #{bookingType}
+            </if>
+            <if test="startDate != null">
+                AND o.booking_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND o.booking_date &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY o.created_at DESC
+    </select>
+
+    <!-- 根据用户ID查询预约订单 -->
+    <select id="getBookingOrdersByUserId" resultMap="OrderDetailResultMap">
+        SELECT
+            o.id, o.order_no, o.user_id, u.username, o.venue_id, v.name as venue_name,
+            o.booking_date, o.start_time, o.end_time, o.booking_type,
+            CASE o.booking_type
+                WHEN 1 THEN '包场预约'
+                WHEN 2 THEN '设施预约'
+                ELSE '未知'
+            END AS booking_type_name,
+            o.total_amount, o.status,
+            CASE o.status
+                WHEN 0 THEN '已取消'
+                WHEN 1 THEN '待支付'
+                WHEN 2 THEN '已预约'
+                WHEN 3 THEN '已完成'
+                ELSE '未知'
+            END AS status_name,
+            o.remarks, o.created_at, o.updated_at
+        FROM
+            booking_order o
+        LEFT JOIN
+            user u ON o.user_id = u.id
+        LEFT JOIN
+            venue v ON o.venue_id = v.id
+        WHERE
+            o.user_id = #{userId}
+        ORDER BY
+            o.created_at DESC
+    </select>
+
+    <!-- 根据ID查询预约订单详情 -->
+    <select id="getBookingOrderById" resultMap="OrderDetailResultMap">
+        SELECT
+            o.id, o.order_no, o.user_id, u.username, o.venue_id, v.name as venue_name,
+            o.booking_date, o.start_time, o.end_time, o.booking_type,
+            CASE o.booking_type
+                WHEN 1 THEN '包场预约'
+                WHEN 2 THEN '设施预约'
+                ELSE '未知'
+            END AS booking_type_name,
+            o.total_amount, o.status,
+            CASE o.status
+                WHEN 0 THEN '已取消'
+                WHEN 1 THEN '待支付'
+                WHEN 2 THEN '已预约'
+                WHEN 3 THEN '已完成'
+                ELSE '未知'
+            END AS status_name,
+            o.remarks, o.created_at, o.updated_at
+        FROM
+            booking_order o
+        LEFT JOIN
+            user u ON o.user_id = u.id
+        LEFT JOIN
+            venue v ON o.venue_id = v.id
+        WHERE
+            o.id = #{id}
+    </select>
+
+    <!-- 查询指定时间段内场馆的预约记录数 -->
+    <select id="countVenueBookings" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            booking_order
+        WHERE
+            venue_id = #{venueId}
+            AND booking_date = #{bookingDate}
+            AND ((start_time &lt;= #{startTime} AND end_time &gt; #{startTime})
+                OR (start_time &lt; #{endTime} AND end_time &gt;= #{endTime})
+                OR (start_time &gt;= #{startTime} AND end_time &lt;= #{endTime}))
+            AND booking_type = 1  <!-- 包场预约 -->
+            AND status = 2        <!-- 已预约状态 -->
+    </select>
+
+    <!-- 查询指定日期和时间段内的设施预约数量 -->
+    <select id="countFacilityBookings" resultType="int">
+        SELECT
+            COALESCE(SUM(bf.quantity), 0)
+        FROM
+            booking_facility bf
+        JOIN
+            booking_order bo ON bf.order_id = bo.id
+        WHERE
+            bf.facility_id = #{facilityId}
+            AND bo.booking_date = #{bookingDate}
+            AND ((bo.start_time &lt;= #{startTime} AND bo.end_time &gt; #{startTime})
+                OR (bo.start_time &lt; #{endTime} AND bo.end_time &gt;= #{endTime})
+                OR (bo.start_time &gt;= #{startTime} AND bo.end_time &lt;= #{endTime}))
+            AND bo.status = 2     <!-- 已预约状态 -->
+    </select>
+
+    <!-- 根据订单号查询预约订单 -->
+    <select id="getBookingOrderByOrderNo" resultMap="BaseResultMap">
+        SELECT *
+        FROM booking_order
+        WHERE order_no = #{orderNo}
+    </select>
+
+</mapper> 

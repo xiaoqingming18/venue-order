@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xcl.venueserver.mapper.BookingFacilityMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.xcl.venueserver.entity.BookingFacility">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="facility_id" property="facilityId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="amount" property="amount"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 设施视图对象结果映射 -->
+    <resultMap id="FacilityVOResultMap" type="com.xcl.venueserver.vo.BookingFacilityVO">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="facility_id" property="facilityId"/>
+        <result column="facility_type" property="facilityType"/>
+        <result column="quantity" property="quantity"/>
+        <result column="unit_price" property="unitPrice"/>
+        <result column="amount" property="amount"/>
+    </resultMap>
+
+    <!-- 根据订单ID查询预约设施列表 -->
+    <select id="getFacilitiesByOrderId" resultMap="FacilityVOResultMap">
+        SELECT
+            bf.id, bf.order_id, bf.facility_id, vf.facility_type,
+            bf.quantity, bf.unit_price, bf.amount
+        FROM
+            booking_facility bf
+        LEFT JOIN
+            venue_facility vf ON bf.facility_id = vf.id
+        WHERE
+            bf.order_id = #{orderId}
+    </select>
+
+    <!-- 批量插入预约设施 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO booking_facility (
+            order_id, facility_id, quantity, unit_price, amount, created_at, updated_at
+        ) VALUES
+        <foreach collection="facilities" item="item" separator=",">
+            (
+                #{item.orderId}, #{item.facilityId}, #{item.quantity}, #{item.unitPrice}, 
+                #{item.amount}, #{item.createdAt}, #{item.updatedAt}
+            )
+        </foreach>
+    </insert>
+
+</mapper> 

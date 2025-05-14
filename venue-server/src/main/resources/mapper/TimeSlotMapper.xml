@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xcl.venueserver.mapper.TimeSlotMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.xcl.venueserver.entity.TimeSlot">
+        <id column="id" property="id"/>
+        <result column="venue_id" property="venueId"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="price_rate" property="priceRate"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 根据场馆ID获取时间段列表 -->
+    <select id="getTimeSlotsByVenueId" resultMap="BaseResultMap">
+        SELECT
+            id, venue_id, start_time, end_time, price_rate, status, created_at, updated_at
+        FROM
+            time_slot
+        WHERE
+            venue_id = #{venueId}
+        ORDER BY
+            start_time ASC
+    </select>
+
+    <!-- 查询指定时间范围的时间段 -->
+    <select id="getTimeSlotsByTimeRange" resultMap="BaseResultMap">
+        SELECT
+            id, venue_id, start_time, end_time, price_rate, status, created_at, updated_at
+        FROM
+            time_slot
+        WHERE
+            venue_id = #{venueId}
+            AND (
+                (start_time &lt;= #{startTime} AND end_time &gt; #{startTime})
+                OR (start_time &lt; #{endTime} AND end_time &gt;= #{endTime})
+                OR (start_time &gt;= #{startTime} AND end_time &lt;= #{endTime})
+            )
+            AND status = 1
+    </select>
+
+</mapper> 
