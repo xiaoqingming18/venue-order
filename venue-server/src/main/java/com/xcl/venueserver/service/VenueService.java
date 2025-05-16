@@ -22,6 +22,17 @@ public interface VenueService extends IService<Venue> {
     IPage<Venue> pageVenues(Integer page, Integer size, String name, Integer venueTypeId, Integer status);
     
     /**
+     * 搜索场馆
+     * @param page 页码
+     * @param size 每页数量
+     * @param keyword 搜索关键词（场馆名称、地址、描述）
+     * @param venueTypeId 场馆类型ID（可选）
+     * @param status 状态（可选，默认为开放状态）
+     * @return 分页数据
+     */
+    IPage<Venue> searchVenues(Integer page, Integer size, String keyword, Integer venueTypeId, Integer status);
+    
+    /**
      * 根据ID获取场馆
      * @param id 场馆ID
      * @return 场馆

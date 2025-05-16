@@ -54,6 +54,23 @@ public class VenueController {
     }
     
     /**
+     * 搜索场馆
+     * 根据关键词搜索场馆名称、地址和描述字段
+     * 该接口不需要登录认证
+     */
+    @GetMapping("/search")
+    public Result<IPage<Venue>> searchVenues(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer venueTypeId,
+            @RequestParam(required = false) Integer status) {
+        
+        IPage<Venue> pageData = venueService.searchVenues(page, size, keyword, venueTypeId, status);
+        return Result.success(pageData);
+    }
+    
+    /**
      * 根据ID获取场馆
      */
     @GetMapping("/{id}")

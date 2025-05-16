@@ -54,6 +54,27 @@ export function pageVenues(params: {
 }
 
 /**
+ * 搜索场馆（基于关键词搜索）
+ * 该方法不需要登录认证
+ */
+export function searchVenues(params: {
+  keyword?: string
+  venueTypeId?: number
+  status?: number
+  page?: number
+  size?: number
+}) {
+  return request({
+    url: '/venues/search',
+    method: 'get',
+    params,
+    headers: {
+      'X-Skip-Auth': 'true' // 标记为跳过鉴权的请求
+    }
+  })
+}
+
+/**
  * 获取场馆详情
  */
 export function getVenueById(id: number) {

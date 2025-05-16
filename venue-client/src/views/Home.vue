@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { pageVenues, getAllVenueTypes } from '@/api/venue'
 import type { VenueType, Venue, PageResult } from '@/types/venue'
+import VenueSearch from '@/components/VenueSearch.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -236,6 +237,14 @@ const navigateTo = (path: string) => {
           @click="changeCarousel(index)"
         ></div>
       </div>
+    </div>
+
+    <!-- 添加搜索组件 -->
+    <div class="search-section">
+      <div class="search-title">
+        <span>搜索场馆</span>
+      </div>
+      <VenueSearch />
     </div>
 
     <!-- 场馆分类 -->
@@ -741,5 +750,18 @@ const navigateTo = (path: string) => {
   .venue-card {
     width: 200px;
   }
+}
+
+/* 搜索部分的样式 */
+.search-section {
+  margin: 20px 0 30px;
+  padding: 0 15px;
+}
+
+.search-title {
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
 }
 </style>
