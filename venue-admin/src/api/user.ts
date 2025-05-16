@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { LoginParams, RegisterParams } from '@/types/user'
+import type { LoginParams, RegisterParams, UserQueryParams, PageResult, UserInfo } from '@/types/user'
 
 /**
  * 获取当前用户信息
@@ -40,4 +40,22 @@ export function register(data: RegisterParams) {
  */
 export function logout() {
   localStorage.removeItem('token')
+}
+
+/**
+ * 获取用户列表
+ * @param params - 查询参数
+ * @returns 用户列表分页数据
+ */
+export function getUserList(params: UserQueryParams) {
+  return request.post<any, {data: PageResult<UserInfo>}>('/admin/user/list', params)
+}
+
+/**
+ * 获取用户详情
+ * @param id - 用户ID
+ * @returns 用户详情信息
+ */
+export function getUserDetail(id: number) {
+  return request.get<any, {data: UserInfo}>(`/admin/user/detail/${id}`)
 }

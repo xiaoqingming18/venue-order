@@ -1,11 +1,13 @@
 package com.xcl.venueserver.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xcl.venueserver.common.utils.JwtUtils;
 import com.xcl.venueserver.common.utils.PasswordUtils;
 import com.xcl.venueserver.dto.LoginDTO;
 import com.xcl.venueserver.dto.RegisterDTO;
+import com.xcl.venueserver.dto.UserQueryDTO;
 import com.xcl.venueserver.entity.User;
 import com.xcl.venueserver.mapper.UserMapper;
 import com.xcl.venueserver.service.UserService;
@@ -15,9 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务实现类
@@ -146,6 +152,82 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         
         // 转换为VO对象，排除敏感信息
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        
+        return userVO;
+    }
+    
+    @Override
+    public Page<UserVO> getUserList(UserQueryDTO queryDTO) {
+        // 构建查询条件
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        
+        // 添加过滤条件
+        if (StringUtils.hasText(queryDTO.getUsername())) {
+            wrapper.like(User::getUsername, queryDTO.getUsername());
+        }
+        if (StringUtils.hasText(queryDTO.getNickname())) {
+            wrapper.like(User::getNickname, queryDTO.getNickname());
+        }
+        if (StringUtils.hasText(queryDTO.getPhone())) {
+            wrapper.like(User::getPhone, queryDTO.getPhone());
+        }
+        if (StringUtils.hasText(queryDTO.getEmail())) {
+            wrapper.like(User::getEmail, queryDTO.getEmail());
+        }
+        if (queryDTO.getStatus() != null) {
+            wrapper.eq(User::getStatus, queryDTO.getStatus());
+        }
+        if (queryDTO.getRole() != null) {
+            wrapper.eq(User::getRole, queryDTO.getRole());
+        }
+        
+        // 添加排序
+        if (StringUtils.hasText(queryDTO.getOrderField())) {
+            boolean isAsc = "asc".equalsIgnoreCase(queryDTO.getOrderType());
+            
+            // 根据字段名动态排序
+            if ("username".equals(queryDTO.getOrderField())) {
+                wrapper.orderBy(true, isAsc, User::getUsername);
+            } else if ("registerTime".equals(queryDTO.getOrderField())) {
+                wrapper.orderBy(true, isAsc, User::getRegisterTime);
+            } else if ("lastLoginTime".equals(queryDTO.getOrderField())) {
+                wrapper.orderBy(true, isAsc, User::getLastLoginTime);
+            } else {
+                // 默认按注册时间降序
+                wrapper.orderByDesc(User::getRegisterTime);
+            }
+        } else {
+            // 默认按注册时间降序
+            wrapper.orderByDesc(User::getRegisterTime);
+        }
+        
+        // 执行分页查询
+        Page<User> page = new Page<>(queryDTO.getCurrent(), queryDTO.getSize());
+        Page<User> userPage = page(page, wrapper);
+        
+        // 转换为VO
+        Page<UserVO> voPage = new Page<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
+        List<UserVO> voList = userPage.getRecords().stream().map(user -> {
+            UserVO vo = new UserVO();
+            BeanUtils.copyProperties(user, vo);
+            return vo;
+        }).collect(Collectors.toList());
+        voPage.setRecords(voList);
+        
+        return voPage;
+    }
+    
+    @Override
+    public UserVO getUserDetail(Long id) {
+        // 获取用户
+        User user = getById(id);
+        if (user == null) {
+            return null;
+        }
+        
+        // 转换为VO
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
         

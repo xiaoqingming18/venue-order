@@ -1,7 +1,9 @@
 package com.xcl.venueserver.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xcl.venueserver.dto.LoginDTO;
 import com.xcl.venueserver.dto.RegisterDTO;
+import com.xcl.venueserver.dto.UserQueryDTO;
 import com.xcl.venueserver.entity.User;
 import com.xcl.venueserver.vo.UserVO;
 
@@ -37,4 +39,18 @@ public interface UserService {
      * @return 用户信息视图对象
      */
     UserVO getUserInfoById(Long userId);
+    
+    /**
+     * 分页查询用户列表
+     * @param queryDTO 查询条件
+     * @return 用户分页列表
+     */
+    Page<UserVO> getUserList(UserQueryDTO queryDTO);
+    
+    /**
+     * 获取用户详情
+     * @param id 用户ID
+     * @return 用户详情
+     */
+    UserVO getUserDetail(Long id);
 } 

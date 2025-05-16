@@ -91,7 +91,14 @@ const router = createRouter({
         {
           path: 'users',
           name: 'users',
-          component: () => import('../views/PlaceholderView.vue'),
+          component: () => import('../views/user/UserListView.vue'),
+          meta: { requiresAdmin: true },
+        },
+        {
+          path: 'users/detail/:id',
+          name: 'userDetail',
+          component: () => import('../views/user/UserDetailView.vue'),
+          meta: { requiresAdmin: true },
         },
         {
           path: 'reviews',
