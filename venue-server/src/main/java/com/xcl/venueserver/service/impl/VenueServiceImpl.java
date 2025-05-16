@@ -61,6 +61,39 @@ public class VenueServiceImpl extends ServiceImpl<VenueMapper, Venue> implements
     }
 
     @Override
+    public IPage<Venue> searchVenues(Integer page, Integer size, String keyword, Integer venueTypeId, Integer status) {
+        LambdaQueryWrapper<Venue> queryWrapper = new LambdaQueryWrapper<>();
+        
+        // 多字段模糊搜索：场馆名称、地址、描述
+        if (StringUtils.hasText(keyword)) {
+            queryWrapper.and(wrapper ->
+                wrapper.like(Venue::getName, keyword)
+                    .or()
+                    .like(Venue::getAddress, keyword)
+                    .or()
+                    .like(Venue::getDescription, keyword)
+            );
+        }
+        
+        // 根据场馆类型ID查询
+        if (venueTypeId != null) {
+            queryWrapper.eq(Venue::getVenueTypeId, venueTypeId);
+        }
+        
+        // 根据状态查询（默认查询开放状态）
+        if (status != null) {
+            queryWrapper.eq(Venue::getStatus, status);
+        } else {
+            queryWrapper.eq(Venue::getStatus, 1); // 默认只查询开放状态的场馆
+        }
+        
+        // 按创建时间降序排序
+        queryWrapper.orderByDesc(Venue::getCreatedAt);
+        
+        return page(new Page<>(page, size), queryWrapper);
+    }
+
+    @Override
     public Venue getVenueById(Long id) {
         return getById(id);
     }

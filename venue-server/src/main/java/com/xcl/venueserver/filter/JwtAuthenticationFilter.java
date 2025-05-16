@@ -33,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/test/public",
             "/api/venues/*/availability",
             "/api/venue-facilities/venue/*",
+            "/api/venues/search",  // 场馆搜索接口
             "/api/alipay/notify",  // 支付宝异步回调接口
             "/api/alipay/return",  // 支付宝同步回调接口
             "/api/alipay/test",    // 支付宝测试接口

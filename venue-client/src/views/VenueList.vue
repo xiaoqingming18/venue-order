@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { pageVenues, getAllVenueTypes } from '@/api/venue'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { pageVenues, getAllVenueTypes, searchVenues } from '@/api/venue'
 import type { Venue, VenueType, PageResult } from '@/types/venue'
 
 const router = useRouter()
+const route = useRoute()
 
 // 查询参数
 const queryParams = reactive({
   page: 1,
   size: 12,
   name: '',
+  keyword: '', // 新增关键词搜索字段
   venueTypeId: undefined as number | undefined,
   status: 1, // 只获取状态为开放的场馆
 })
@@ -20,6 +22,7 @@ const venueList = ref<Venue[]>([])
 const venueTypes = ref<VenueType[]>([])
 const total = ref(0)
 const loading = ref(false)
+const isSearching = ref(false) // 标记是否在使用搜索模式
 
 // 获取场馆类型列表
 const fetchVenueTypes = async () => {
@@ -35,7 +38,20 @@ const fetchVenueTypes = async () => {
 const fetchVenues = async () => {
   loading.value = true
   try {
-    const res = await pageVenues(queryParams) as { data: PageResult<Venue> }
+    // 判断是使用关键词搜索还是普通查询
+    let res;
+    if (isSearching.value && queryParams.keyword) {
+      res = await searchVenues({
+        keyword: queryParams.keyword,
+        venueTypeId: queryParams.venueTypeId,
+        status: queryParams.status,
+        page: queryParams.page,
+        size: queryParams.size
+      }) as { data: PageResult<Venue> }
+    } else {
+      res = await pageVenues(queryParams) as { data: PageResult<Venue> }
+    }
+    
     venueList.value = res.data.records
     total.value = res.data.total
   } catch (error) {
@@ -48,13 +64,27 @@ const fetchVenues = async () => {
 // 搜索处理
 const handleSearch = () => {
   queryParams.page = 1
+  
+  // 根据搜索条件决定使用哪种模式
+  if (queryParams.keyword) {
+    isSearching.value = true
+    queryParams.name = '' // 清空普通名称搜索
+  } else if (queryParams.name) {
+    isSearching.value = false
+    queryParams.keyword = '' // 清空关键词搜索
+  } else {
+    isSearching.value = false
+  }
+  
   fetchVenues()
 }
 
 // 重置筛选条件
 const resetSearch = () => {
   queryParams.name = ''
+  queryParams.keyword = ''
   queryParams.venueTypeId = undefined
+  isSearching.value = false
   handleSearch()
 }
 
@@ -75,10 +105,28 @@ const getVenueTypeName = (typeId: number): string => {
   return venueType ? venueType.name : '未知类型'
 }
 
+// 监听URL参数变化
+watch(() => route.query, (newQuery) => {
+  if (newQuery.keyword) {
+    queryParams.keyword = newQuery.keyword as string
+    isSearching.value = true
+  }
+  
+  if (newQuery.venueTypeId) {
+    queryParams.venueTypeId = parseInt(newQuery.venueTypeId as string)
+  }
+  
+  handleSearch()
+}, { immediate: true })
+
 // 页面初始化
 onMounted(() => {
   fetchVenueTypes()
-  fetchVenues()
+  
+  // 如果URL中没有查询参数，则执行默认查询
+  if (!route.query.keyword && !route.query.venueTypeId) {
+    fetchVenues()
+  }
 })
 </script>
 
@@ -88,10 +136,27 @@ onMounted(() => {
       <h1 class="section-title">场馆浏览</h1>
       <div class="search-form">
         <el-form :inline="true" :model="queryParams" class="venue-search-form">
-          <el-form-item>
-            <el-input v-model="queryParams.name" placeholder="场馆名称" clearable />
+          <!-- 关键词搜索 -->
+          <el-form-item label="关键词搜索">
+            <el-input 
+              v-model="queryParams.keyword" 
+              placeholder="场馆名称、地址、描述..." 
+              clearable
+              @keyup.enter="handleSearch"
+            />
           </el-form-item>
-          <el-form-item>
+          
+          <!-- 传统搜索（仅按名称） -->
+          <el-form-item label="场馆名称">
+            <el-input 
+              v-model="queryParams.name" 
+              placeholder="场馆名称" 
+              clearable
+              @keyup.enter="handleSearch"
+            />
+          </el-form-item>
+          
+          <el-form-item label="场馆类型">
             <el-select v-model="queryParams.venueTypeId" placeholder="场馆类型" clearable>
               <el-option
                 v-for="item in venueTypes"
@@ -101,6 +166,7 @@ onMounted(() => {
               />
             </el-select>
           </el-form-item>
+          
           <el-form-item>
             <el-button type="primary" @click="handleSearch">搜索</el-button>
             <el-button @click="resetSearch">重置</el-button>
@@ -110,6 +176,11 @@ onMounted(() => {
     </div>
 
     <div class="venue-list-section" v-loading="loading">
+      <!-- 搜索结果提示 -->
+      <div v-if="isSearching && queryParams.keyword" class="search-result-tip">
+        <span>关键词 "{{ queryParams.keyword }}" 的搜索结果 ({{ total }})</span>
+      </div>
+      
       <template v-if="venueList.length > 0">
         <div class="venue-card-grid">
           <el-card 
@@ -119,7 +190,7 @@ onMounted(() => {
             @click="viewVenueDetail(venue.id)"
           >
             <div class="venue-card-image">
-              <img :src="`https://picsum.photos/300/200?random=${venue.id}`" alt="场馆图片" />
+              <img :src="venue.coverImage || `https://picsum.photos/300/200?random=${venue.id}`" alt="场馆图片" />
             </div>
             <div class="venue-card-content">
               <h3 class="venue-name">{{ venue.name }}</h3>
@@ -166,6 +237,15 @@ onMounted(() => {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
+}
+
+.search-result-tip {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f0f9eb;
+  color: #67c23a;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 .venue-card-grid {
@@ -242,5 +322,22 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .venue-search-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .venue-search-form .el-form-item {
+    margin-right: 0;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .el-input, .el-select {
+    width: 100%;
+  }
 }
 </style> 
