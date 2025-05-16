@@ -3,11 +3,14 @@ package com.xcl.venueserver.controller.admin;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xcl.venueserver.common.utils.CurrentUser;
 import com.xcl.venueserver.common.utils.Result;
+import com.xcl.venueserver.dto.UserAddDTO;
+import com.xcl.venueserver.dto.UserEditDTO;
 import com.xcl.venueserver.dto.UserQueryDTO;
 import com.xcl.venueserver.service.UserService;
 import com.xcl.venueserver.vo.PageResult;
 import com.xcl.venueserver.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -90,6 +93,56 @@ public class AdminUserController {
         } catch (Exception e) {
             log.error("获取用户详情失败", e);
             return Result.error("获取用户详情失败：" + e.getMessage());
+        }
+    }
+    
+    /**
+     * 添加用户
+     * @param userAddDTO 用户添加信息
+     * @return 添加结果
+     */
+    @PostMapping("/add")
+    public Result<UserVO> addUser(@Validated @RequestBody UserAddDTO userAddDTO) {
+        try {
+            // 权限检查
+            if (!checkAdmin()) {
+                return Result.error(403, "无权限访问");
+            }
+            
+            // 添加用户
+            UserVO userVO = userService.addUser(userAddDTO);
+            
+            Result<UserVO> result = Result.success(userVO);
+            result.setMessage("添加用户成功");
+            return result;
+        } catch (Exception e) {
+            log.error("添加用户失败", e);
+            return Result.error("添加用户失败：" + e.getMessage());
+        }
+    }
+    
+    /**
+     * 编辑用户
+     * @param userEditDTO 用户编辑信息
+     * @return 编辑结果
+     */
+    @PutMapping("/edit")
+    public Result<UserVO> updateUser(@Validated @RequestBody UserEditDTO userEditDTO) {
+        try {
+            // 权限检查
+            if (!checkAdmin()) {
+                return Result.error(403, "无权限访问");
+            }
+            
+            // 编辑用户
+            UserVO userVO = userService.updateUser(userEditDTO);
+            
+            Result<UserVO> result = Result.success(userVO);
+            result.setMessage("编辑用户成功");
+            return result;
+        } catch (Exception e) {
+            log.error("编辑用户失败", e);
+            return Result.error("编辑用户失败：" + e.getMessage());
         }
     }
 } 

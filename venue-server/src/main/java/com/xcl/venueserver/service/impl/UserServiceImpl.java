@@ -7,6 +7,8 @@ import com.xcl.venueserver.common.utils.JwtUtils;
 import com.xcl.venueserver.common.utils.PasswordUtils;
 import com.xcl.venueserver.dto.LoginDTO;
 import com.xcl.venueserver.dto.RegisterDTO;
+import com.xcl.venueserver.dto.UserAddDTO;
+import com.xcl.venueserver.dto.UserEditDTO;
 import com.xcl.venueserver.dto.UserQueryDTO;
 import com.xcl.venueserver.entity.User;
 import com.xcl.venueserver.mapper.UserMapper;
@@ -230,6 +232,157 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 转换为VO
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
+        
+        return userVO;
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserVO addUser(UserAddDTO userAddDTO) {
+        // 验证用户名是否已存在
+        if (getByUsername(userAddDTO.getUsername()) != null) {
+            throw new RuntimeException("用户名已存在");
+        }
+        
+        // 验证两次密码是否一致
+        if (!Objects.equals(userAddDTO.getPassword(), userAddDTO.getConfirmPassword())) {
+            throw new RuntimeException("两次密码输入不一致");
+        }
+        
+        // 验证邮箱是否已存在
+        if (StringUtils.hasText(userAddDTO.getEmail())) {
+            User existUser = getOne(new LambdaQueryWrapper<User>().eq(User::getEmail, userAddDTO.getEmail()));
+            if (existUser != null) {
+                throw new RuntimeException("邮箱已被注册");
+            }
+        }
+        
+        // 验证手机号是否已存在
+        if (StringUtils.hasText(userAddDTO.getPhone())) {
+            User existUser = getOne(new LambdaQueryWrapper<User>().eq(User::getPhone, userAddDTO.getPhone()));
+            if (existUser != null) {
+                throw new RuntimeException("手机号已被注册");
+            }
+        }
+        
+        // 创建新用户
+        User user = new User();
+        // 复制基本属性
+        BeanUtils.copyProperties(userAddDTO, user);
+        
+        // 性别映射转换
+        String genderValue = userAddDTO.getGender();
+        if (StringUtils.hasText(genderValue)) {
+            if ("男".equals(genderValue) || "M".equals(genderValue)) {
+                genderValue = "male";
+            } else if ("女".equals(genderValue) || "F".equals(genderValue)) {
+                genderValue = "female";
+            } else {
+                genderValue = "other";
+            }
+        }
+        user.setGender(genderValue);
+        
+        // 设置默认昵称
+        if (!StringUtils.hasText(user.getNickname())) {
+            user.setNickname(user.getUsername());
+        }
+        
+        // 设置默认值
+        if (user.getStatus() == null) {
+            user.setStatus(1); // 默认状态为正常
+        }
+        if (user.getRole() == null) {
+            user.setRole(1); // 默认角色为普通用户
+        }
+        
+        user.setLoginFailCount(0);
+        user.setRegisterTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        // 实际项目中这里应该获取真实IP
+        user.setRegisterIp("127.0.0.1");
+        
+        // 设置密码
+        String salt = passwordUtils.generateSalt();
+        user.setSalt(salt);
+        user.setPassword(passwordUtils.encryptPassword(userAddDTO.getPassword(), salt));
+        
+        // 保存用户
+        userMapper.insert(user);
+        
+        // 返回用户信息（不含敏感信息）
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        
+        return userVO;
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserVO updateUser(UserEditDTO userEditDTO) {
+        // 验证用户是否存在
+        User existUser = getById(userEditDTO.getId());
+        if (existUser == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        
+        // 验证邮箱唯一性
+        if (StringUtils.hasText(userEditDTO.getEmail()) && !userEditDTO.getEmail().equals(existUser.getEmail())) {
+            User emailUser = getOne(new LambdaQueryWrapper<User>().eq(User::getEmail, userEditDTO.getEmail()));
+            if (emailUser != null && !emailUser.getId().equals(userEditDTO.getId())) {
+                throw new RuntimeException("邮箱已被其他用户使用");
+            }
+        }
+        
+        // 验证手机号唯一性
+        if (StringUtils.hasText(userEditDTO.getPhone()) && !userEditDTO.getPhone().equals(existUser.getPhone())) {
+            User phoneUser = getOne(new LambdaQueryWrapper<User>().eq(User::getPhone, userEditDTO.getPhone()));
+            if (phoneUser != null && !phoneUser.getId().equals(userEditDTO.getId())) {
+                throw new RuntimeException("手机号已被其他用户使用");
+            }
+        }
+        
+        // 性别映射转换
+        String genderValue = userEditDTO.getGender();
+        if (StringUtils.hasText(genderValue)) {
+            if ("男".equals(genderValue) || "M".equals(genderValue)) {
+                genderValue = "male";
+            } else if ("女".equals(genderValue) || "F".equals(genderValue)) {
+                genderValue = "female";
+            } else {
+                genderValue = "other";
+            }
+        }
+        
+        // 更新用户信息
+        User user = new User();
+        user.setId(userEditDTO.getId());
+        user.setEmail(userEditDTO.getEmail());
+        user.setPhone(userEditDTO.getPhone());
+        user.setNickname(userEditDTO.getNickname());
+        user.setAvatar(userEditDTO.getAvatar());
+        user.setGender(genderValue);
+        user.setBirthday(userEditDTO.getBirthday());
+        user.setAddress(userEditDTO.getAddress());
+        user.setStatus(userEditDTO.getStatus());
+        user.setRole(userEditDTO.getRole());
+        user.setUpdateTime(LocalDateTime.now());
+        
+        // 如果需要修改密码
+        if (StringUtils.hasText(userEditDTO.getNewPassword())) {
+            String salt = existUser.getSalt();
+            user.setPassword(passwordUtils.encryptPassword(userEditDTO.getNewPassword(), salt));
+        }
+        
+        // 更新用户
+        userMapper.updateById(user);
+        
+        // 重新获取用户信息
+        User updatedUser = getById(userEditDTO.getId());
+        
+        // 返回用户信息（不含敏感信息）
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(updatedUser, userVO);
         
         return userVO;
     }

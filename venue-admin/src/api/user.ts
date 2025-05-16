@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { LoginParams, RegisterParams, UserQueryParams, PageResult, UserInfo } from '@/types/user'
+import type { LoginParams, RegisterParams, UserQueryParams, PageResult, UserInfo, UserAddParams, UserEditParams } from '@/types/user'
 
 /**
  * 获取当前用户信息
@@ -58,4 +58,22 @@ export function getUserList(params: UserQueryParams) {
  */
 export function getUserDetail(id: number) {
   return request.get<any, {data: UserInfo}>(`/admin/user/detail/${id}`)
+}
+
+/**
+ * 添加用户
+ * @param data - 用户添加信息
+ * @returns 添加后的用户信息
+ */
+export function addUser(data: UserAddParams) {
+  return request.post<any, {data: UserInfo}>('/admin/user/add', data)
+}
+
+/**
+ * 编辑用户
+ * @param data - 用户编辑信息
+ * @returns 编辑后的用户信息
+ */
+export function updateUser(data: UserEditParams) {
+  return request.put<any, {data: UserInfo}>('/admin/user/edit', data)
 }

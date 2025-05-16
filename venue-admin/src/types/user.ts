@@ -73,3 +73,38 @@ export interface PageResult<T> {
   current: number
   pages: number
 }
+
+/**
+ * 用户添加参数
+ */
+export interface UserAddParams {
+  username: string
+  password: string
+  confirmPassword: string
+  email?: string
+  phone?: string
+  nickname?: string
+  avatar?: string
+  gender?: string
+  birthday?: string
+  address?: string
+  status?: number
+  role?: number
+}
+
+/**
+ * 用户编辑参数
+ */
+export interface UserEditParams {
+  id: number
+  email?: string
+  phone?: string
+  nickname?: string
+  avatar?: string
+  gender?: string
+  birthday?: string
+  address?: string
+  status?: number
+  role?: number
+  newPassword?: string
+}

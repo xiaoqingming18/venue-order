@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, View, Edit, Delete } from '@element-plus/icons-vue'
+import { Search, Refresh, View, Edit, Delete, Plus } from '@element-plus/icons-vue'
 import { getUserList } from '@/api/user'
 import type { UserInfo, UserQueryParams, PageResult } from '@/types/user'
 import dayjs from 'dayjs'
@@ -118,6 +118,16 @@ const handleViewDetail = (id: number) => {
   router.push(`/home/users/detail/${id}`)
 }
 
+// 编辑用户
+const handleEdit = (id: number) => {
+  router.push(`/home/users/edit/${id}`)
+}
+
+// 添加用户
+const handleAdd = () => {
+  router.push('/home/users/add')
+}
+
 // 组件挂载时获取用户列表
 onMounted(() => {
   fetchUserList()
@@ -189,6 +199,7 @@ const formatRole = (role: number) => {
     <el-card class="list-card">
       <div class="list-header">
         <h3>用户列表</h3>
+        <el-button type="primary" @click="handleAdd" :icon="Plus">新增用户</el-button>
       </div>
 
       <el-table
@@ -238,6 +249,14 @@ const formatRole = (role: number) => {
               circle
               @click="handleViewDetail(scope.row.id)"
               title="查看详情"
+            />
+            <el-button
+              size="small"
+              type="warning"
+              :icon="Edit"
+              circle
+              @click="handleEdit(scope.row.id)"
+              title="编辑用户"
             />
           </template>
         </el-table-column>

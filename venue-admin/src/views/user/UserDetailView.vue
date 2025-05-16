@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, User } from '@element-plus/icons-vue'
+import { ArrowLeft, User, Edit } from '@element-plus/icons-vue'
 import { getUserDetail } from '@/api/user'
 import type { UserInfo } from '@/types/user'
 import { ElMessage } from 'element-plus'
@@ -41,6 +41,11 @@ const handleBack = () => {
   router.back()
 }
 
+// 编辑用户
+const handleEdit = () => {
+  router.push(`/home/users/edit/${userId.value}`)
+}
+
 // 格式化日期
 const formatDateTime = (dateTime: string | null) => {
   if (!dateTime) return '-'
@@ -71,6 +76,27 @@ const formatRole = (role: number) => {
   }
 }
 
+// 格式化性别
+const formatGender = (gender: string | null) => {
+  if (!gender) return '-'
+  switch (gender) {
+    case 'male':
+      return '男'
+    case 'female':
+      return '女'
+    case 'other':
+      return '保密'
+    case 'M':
+      return '男'
+    case 'F':
+      return '女'
+    case 'O':
+      return '保密'
+    default:
+      return gender
+  }
+}
+
 // 组件挂载时获取用户详情
 onMounted(() => {
   fetchUserDetail()
@@ -86,6 +112,9 @@ onMounted(() => {
             <el-button link :icon="ArrowLeft" @click="handleBack">返回</el-button>
             <span class="header-title">用户详情</span>
           </div>
+          <div class="header-right">
+            <el-button type="primary" :icon="Edit" @click="handleEdit">编辑</el-button>
+          </div>
         </div>
       </template>
 
@@ -97,7 +126,7 @@ onMounted(() => {
           <el-descriptions-item label="昵称">{{ userDetail.nickname || '-' }}</el-descriptions-item>
           <el-descriptions-item label="邮箱">{{ userDetail.email || '-' }}</el-descriptions-item>
           <el-descriptions-item label="手机号">{{ userDetail.phone || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="性别">{{ userDetail.gender || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="性别">{{ formatGender(userDetail.gender) }}</el-descriptions-item>
           <el-descriptions-item label="生日">{{ userDetail.birthday || '-' }}</el-descriptions-item>
           <el-descriptions-item label="地址">{{ userDetail.address || '-' }}</el-descriptions-item>
           <el-descriptions-item label="头像">
@@ -144,6 +173,11 @@ onMounted(() => {
 }
 
 .header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
   display: flex;
   align-items: center;
 }

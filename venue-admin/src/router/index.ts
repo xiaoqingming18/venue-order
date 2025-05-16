@@ -101,6 +101,18 @@ const router = createRouter({
           meta: { requiresAdmin: true },
         },
         {
+          path: 'users/add',
+          name: 'userAdd',
+          component: () => import('../views/user/UserFormView.vue'),
+          meta: { requiresAdmin: true, type: 'add' },
+        },
+        {
+          path: 'users/edit/:id',
+          name: 'userEdit',
+          component: () => import('../views/user/UserFormView.vue'),
+          meta: { requiresAdmin: true, type: 'edit' },
+        },
+        {
           path: 'reviews',
           name: 'reviews',
           component: () => import('../views/review/ReviewListView.vue'),
