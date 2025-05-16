@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getVenueById, getVenueFacilities, getVenueLocations } from '@/api/venue'
 import { getVenueReviews, getVenueReviewStats, reportReview, replyReview } from '@/api/review'
+import { addFavorite, removeFavorite, checkIsFavorite } from '@/api/favorite'
 import type { Venue, VenueFacility, VenueLocation } from '@/types/venue'
 import type { Review, ReviewStats } from '@/types/review'
 import { useUserStore } from '@/stores/user'
@@ -53,6 +54,10 @@ const currentReplyReview = ref<any>(null)
 const replyForm = ref({
   content: ''
 })
+
+// 收藏相关
+const isFavorited = ref(false)
+const favoriteLoading = ref(false)
 
 // 计算当前用户是否为场馆方
 const isVenueOwner = computed(() => {
@@ -392,12 +397,65 @@ const submitReply = async () => {
   }
 }
 
-// 页面初始化
-onMounted(() => {
-  fetchVenueDetail()
-  // 默认加载评价数据和统计信息
-  fetchVenueReviews()
-  fetchReviewStats()
+// 检查是否已收藏
+const checkFavoriteStatus = async () => {
+  if (!userStore.isLoggedIn) return
+  
+  try {
+    favoriteLoading.value = true
+    const res = await checkIsFavorite(venueId.value)
+    isFavorited.value = res.data
+  } catch (error) {
+    console.error('检查收藏状态失败', error)
+  } finally {
+    favoriteLoading.value = false
+  }
+}
+
+// 收藏/取消收藏场馆
+const toggleFavorite = async () => {
+  if (!userStore.isLoggedIn) {
+    ElMessage.warning('请先登录后再进行收藏')
+    router.push('/login')
+    return
+  }
+  
+  try {
+    favoriteLoading.value = true
+    
+    if (isFavorited.value) {
+      // 取消收藏
+      await removeFavorite(venueId.value)
+      isFavorited.value = false
+      ElMessage.success('已取消收藏')
+    } else {
+      // 添加收藏
+      await addFavorite({ venueId: venueId.value })
+      isFavorited.value = true
+      ElMessage.success('收藏成功')
+    }
+  } catch (error) {
+    console.error('操作收藏失败', error)
+    ElMessage.error('操作失败，请稍后重试')
+  } finally {
+    favoriteLoading.value = false
+  }
+}
+
+// 初始化数据时检查收藏状态
+onMounted(async () => {
+  await fetchVenueDetail()
+  
+  // 如果用户已登录，检查该场馆是否已收藏
+  if (userStore.isLoggedIn) {
+    checkFavoriteStatus()
+  }
+  
+  // 获取评价和统计数据
+  if (activeTab.value === 'reviews') {
+    fetchVenueReviews()
+    fetchReviewStats()
+  }
 })
 
 // 监听标签页变化
@@ -457,7 +515,18 @@ const handleReviewCommand = (command: any) => {
               <span class="price-label">基础价格:</span>
               <span class="price-value">¥{{ venueInfo.basePrice }}/小时</span>
             </div>
-            <el-button type="primary" size="large" @click="goToBooking" :disabled="venueInfo.status !== 1">立即预约</el-button>
+            <div class="action-buttons">
+              <el-button
+                :type="isFavorited ? 'danger' : 'default'"
+                size="large"
+                :icon="isFavorited ? 'el-icon-star-on' : 'el-icon-star-off'"
+                @click="toggleFavorite"
+                :loading="favoriteLoading"
+              >
+                {{ isFavorited ? '已收藏' : '收藏' }}
+              </el-button>
+              <el-button type="primary" size="large" @click="goToBooking" :disabled="venueInfo.status !== 1">立即预约</el-button>
+            </div>
           </div>
         </div>
       </div>
@@ -801,8 +870,8 @@ const handleReviewCommand = (command: any) => {
 .venue-price-box {
   margin-top: auto;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   background-color: #f8f8f8;
   padding: 15px;
   border-radius: 8px;
@@ -1258,5 +1327,22 @@ const handleReviewCommand = (command: any) => {
 
 .reply-form {
   padding: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .action-buttons .el-button {
+    width: 100%;
+  }
 }
 </style> 

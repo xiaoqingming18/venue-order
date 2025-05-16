@@ -1,7 +1,7 @@
 /*
  Navicat Premium Dump SQL
 
- Source Server         : bishe
+ Source Server         : ershou
  Source Server Type    : MySQL
  Source Server Version : 80035 (8.0.35)
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 80035 (8.0.35)
  File Encoding         : 65001
 
- Date: 16/05/2025 23:38:19
+ Date: 17/05/2025 01:07:18
 */
 
 SET NAMES utf8mb4;
@@ -223,10 +223,34 @@ CREATE TABLE `user`  (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (10003, 'admin', '$2a$10$.UP8DmC3WB9nJ36FyFhZzOVxSNsaynaZsrFQwfaIrmoZsA61WImRu', 'gvmsrph93m1qwhk9', 'xiaoqingming18@163.com', '15556916571', '小吊乐管理员', NULL, 'other', NULL, NULL, 1, 2, 0, '2025-05-16 11:27:57', '127.0.0.1', '2025-05-07 18:51:03', '127.0.0.1', '2025-05-07 18:51:02');
+INSERT INTO `user` VALUES (10003, 'admin', '$2a$10$.UP8DmC3WB9nJ36FyFhZzOVxSNsaynaZsrFQwfaIrmoZsA61WImRu', 'gvmsrph93m1qwhk9', 'xiaoqingming18@163.com', '15556916571', '小吊乐管理员', NULL, 'other', NULL, NULL, 1, 2, 0, '2025-05-17 00:08:02', '127.0.0.1', '2025-05-07 18:51:03', '127.0.0.1', '2025-05-07 18:51:02');
 INSERT INTO `user` VALUES (10004, 'xiaoqingming18', '$2a$10$K2Qoj/T9LjLv2JgcrngWz.vPpnn3r/1pDJ8KcA3xUUXgsSBoA9H8.', 'av1oqdkw8t2fa7lc', 'testuser@test.com', '15567675656', '小清明十八', NULL, 'other', NULL, NULL, 1, 1, 2, '2025-05-13 16:56:06', '127.0.0.1', '2025-05-09 15:50:50', '127.0.0.1', '2025-05-09 15:50:50');
 INSERT INTO `user` VALUES (10005, 'xiaoqingming', '$2a$10$jkbmg58MIHdtfYCrd28JwuZcHq6Gdu36neC817CfeKW2d/npmuLqG', '2u9zcazmzvss51v5', 'testuser2@test.com', '15567675653', '小清明十八', NULL, 'other', NULL, NULL, 1, 1, 0, '2025-05-12 20:14:21', '127.0.0.1', '2025-05-12 20:14:20', '127.0.0.1', '2025-05-12 20:14:20');
-INSERT INTO `user` VALUES (10006, 'BirdSuper', '$2a$10$u3aFZA16Oph/bMuOaTz12ejESZjjB8I2aU.Z0hgwdFcQbuBOebkMm', 'vt0ddfjbiun64txl', '31142582@qq.com', '18326381722', '鸟超', NULL, 'other', NULL, NULL, 1, 1, 0, '2025-05-16 10:13:47', '127.0.0.1', '2025-05-13 12:06:24', '127.0.0.1', '2025-05-13 12:06:23');
+INSERT INTO `user` VALUES (10006, 'BirdSuper', '$2a$10$u3aFZA16Oph/bMuOaTz12ejESZjjB8I2aU.Z0hgwdFcQbuBOebkMm', 'vt0ddfjbiun64txl', '31142582@qq.com', '18326381722', '鸟超', NULL, 'other', NULL, NULL, 1, 1, 0, '2025-05-17 00:05:35', '127.0.0.1', '2025-05-13 12:06:24', '127.0.0.1', '2025-05-13 12:06:23');
+
+-- ----------------------------
+-- Table structure for user_favorite_venue
+-- ----------------------------
+DROP TABLE IF EXISTS `user_favorite_venue`;
+CREATE TABLE `user_favorite_venue`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '收藏ID',
+  `user_id` bigint NOT NULL COMMENT '用户ID',
+  `venue_id` bigint NOT NULL COMMENT '场馆ID',
+  `notes` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '收藏备注',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '收藏时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `idx_user_venue`(`user_id` ASC, `venue_id` ASC) USING BTREE COMMENT '用户和场馆的唯一组合索引',
+  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
+  INDEX `idx_venue_id`(`venue_id` ASC) USING BTREE,
+  CONSTRAINT `fk_favorite_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_favorite_venue` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户收藏场馆表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of user_favorite_venue
+-- ----------------------------
+INSERT INTO `user_favorite_venue` VALUES (2, 10006, 2, NULL, '2025-05-17 01:01:18', '2025-05-17 01:01:18');
 
 -- ----------------------------
 -- Table structure for venue
@@ -258,7 +282,7 @@ CREATE TABLE `venue`  (
 -- Records of venue
 -- ----------------------------
 INSERT INTO `venue` VALUES (1, '羽毛球一号馆', 4, 15.00, 20, '测试地址', '这是一号羽毛球场馆', '09:00-22:00', '15556916571', NULL, 1, '2025-05-09 15:39:19', '2025-05-09 15:39:19', 0, 0);
-INSERT INTO `venue` VALUES (2, '狗狗羽毛球馆', 4, 30.00, 20, '狗狗场馆地址', '狗狗场馆描述', '10:00-20:00', '15556916571', 'http://192.168.200.60:9000/venue/fef2a527-38b4-48b3-8c8d-ef6f601f13f7.png', 1, '2025-05-10 23:59:23', '2025-05-11 09:31:23', 0, 0);
+INSERT INTO `venue` VALUES (2, '狗狗羽毛球馆', 4, 30.00, 20, '狗狗场馆地址', '狗狗场馆描述', '10:00-20:00', '15556916571', 'http://172.20.10.4:9000/venue/4cad33e7-d865-4f6a-b50b-720622dc7cb6.jpg', 1, '2025-05-10 23:59:23', '2025-05-17 00:08:46', 0, 0);
 
 -- ----------------------------
 -- Table structure for venue_facility
@@ -360,7 +384,7 @@ CREATE TABLE `venue_review_ban`  (
   CONSTRAINT `fk_ban_admin` FOREIGN KEY (`admin_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_ban_report` FOREIGN KEY (`report_id`) REFERENCES `venue_review_report` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
   CONSTRAINT `fk_ban_review` FOREIGN KEY (`review_id`) REFERENCES `venue_review` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价封禁记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价封禁记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of venue_review_ban
@@ -412,7 +436,7 @@ CREATE TABLE `venue_review_report`  (
   INDEX `idx_status`(`status` ASC) USING BTREE,
   CONSTRAINT `fk_report_review` FOREIGN KEY (`review_id`) REFERENCES `venue_review` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_report_user` FOREIGN KEY (`reporter_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价举报表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价举报表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of venue_review_report

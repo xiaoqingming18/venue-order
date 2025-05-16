@@ -141,6 +141,16 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    // 在现有路由中添加我的收藏页面路由
+    {
+      path: '/my-favorites',
+      name: 'MyFavorites',
+      component: () => import('@/views/MyFavorites.vue'),
+      meta: {
+        requiresAuth: true,
+        title: '我的收藏'
+      }
+    },
   ],
 })
 

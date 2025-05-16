@@ -38,7 +38,7 @@ const menuItems = [
     title: '收藏场馆',
     icon: 'heart',
     color: '#67C23A',
-    route: '/venues'
+    route: '/my-favorites'
   },
   {
     id: 'settings',
