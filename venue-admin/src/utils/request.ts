@@ -46,7 +46,53 @@ request.interceptors.response.use(
   },
   (error) => {
     console.error('响应错误：', error)
-    ElMessage.error(error.response?.data?.message || '请求失败，请稍后再试')
+    
+    // 错误处理逻辑
+    let errorMessage = '请求失败，请稍后再试'
+    
+    if (error.response) {
+      // 记录错误状态码和详细信息
+      console.error('错误状态码：', error.response.status)
+      console.error('错误详细信息：', error.response.data)
+
+      // 根据状态码处理不同类型的错误
+      if (error.response.status === 400) {
+        // 处理400错误，尝试提取更具体的错误信息
+        if (error.response.data) {
+          if (typeof error.response.data === 'object') {
+            // 如果返回的是对象，尝试提取message字段
+            errorMessage = error.response.data.message || '数据验证失败'
+          } else if (typeof error.response.data === 'string') {
+            // 如果返回的是字符串，直接使用
+            errorMessage = error.response.data
+          }
+        }
+      } else if (error.response.status === 401) {
+        // 处理401错误（未授权）
+        errorMessage = '登录已过期，请重新登录'
+        localStorage.removeItem('token')
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 1500)
+      } else if (error.response.status === 403) {
+        // 处理403错误（禁止访问）
+        errorMessage = '您没有权限访问此资源'
+      } else if (error.response.status === 404) {
+        // 处理404错误（资源不存在）
+        errorMessage = '请求的资源不存在'
+      } else if (error.response.status === 500) {
+        // 处理500错误（服务器错误）
+        errorMessage = '服务器错误，请稍后再试'
+      }
+    } else if (error.request) {
+      // 处理请求已发送但未收到响应的情况
+      errorMessage = '服务器没有响应，请检查网络连接'
+    } else {
+      // 处理其他类型的错误
+      errorMessage = error.message || '请求过程中发生未知错误'
+    }
+    
+    ElMessage.error(errorMessage)
     return Promise.reject(error)
   },
 )

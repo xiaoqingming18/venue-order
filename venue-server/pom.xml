@@ -39,7 +39,7 @@
             <version>3.5.2</version>
         </dependency>
         
-        <!-- Lombok 可选 -->
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -71,7 +71,7 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
         
-        <!-- Hutool工具包 -->
+        <!-- Hutool工具�?-->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
@@ -91,14 +91,14 @@
             <version>7.1.0</version>
         </dependency>
         
-        <!-- OkHttp 兼容MinIO客户端 -->
+        <!-- OkHttp 兼容MinIO客户�?-->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>3.14.9</version>
         </dependency>
 
-        <!--引入支付宝支付 -->
+        <!--引入支付宝支�?-->
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-easysdk</artifactId>
@@ -133,6 +133,8 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
+                    <executable>C:\Program Files\Java\jdk1.8.0_202\bin\javac</executable>
+                    <fork>true</fork>
                 </configuration>
             </plugin>
             <plugin>
@@ -156,3 +158,4 @@
     </build>
 
 </project>
+

@@ -89,10 +89,19 @@ export function getVenueById(id: number) {
  * 创建场馆
  */
 export function createVenue(data: VenueDTO) {
+  // 确保数值类型正确
+  const processedData = {
+    ...data,
+    venueTypeId: Number(data.venueTypeId),
+    basePrice: Number(data.basePrice),
+    capacity: Number(data.capacity),
+    status: Number(data.status)
+  }
+  
   return request({
     url: '/venues',
     method: 'post',
-    data,
+    data: processedData,
   })
 }
 

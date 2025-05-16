@@ -160,19 +160,35 @@ const submitForm = async () => {
     
     loading.value = true
     try {
+      // 确保数据类型正确
+      const formData = {
+        ...form,
+        venueTypeId: Number(form.venueTypeId),
+        basePrice: Number(form.basePrice),
+        capacity: Number(form.capacity),
+        status: Number(form.status)
+      }
+      
       if (isEdit.value) {
         // 编辑模式
-        await updateVenue(venueId.value as number, form)
+        await updateVenue(venueId.value as number, formData)
         ElMessage.success('更新场馆成功')
       } else {
         // 新增模式
-        await createVenue(form)
+        await createVenue(formData)
         ElMessage.success('创建场馆成功')
       }
       router.push('/home/venues')
-    } catch (error) {
+    } catch (error: any) {
       console.error('保存场馆失败', error)
-      ElMessage.error(isEdit.value ? '更新场馆失败' : '创建场馆失败')
+      // 尝试提取详细错误信息
+      let errorMsg = isEdit.value ? '更新场馆失败' : '创建场馆失败'
+      if (error.response && error.response.data) {
+        if (error.response.data.message) {
+          errorMsg = error.response.data.message
+        }
+      }
+      ElMessage.error(errorMsg)
     } finally {
       loading.value = false
     }
