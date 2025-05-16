@@ -11,7 +11,7 @@
  Target Server Version : 80035 (8.0.35)
  File Encoding         : 65001
 
- Date: 15/05/2025 18:03:12
+ Date: 16/05/2025 23:38:19
 */
 
 SET NAMES utf8mb4;
@@ -35,6 +35,10 @@ CREATE TABLE `booking_config`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预约配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
+-- Records of booking_config
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for booking_facility
 -- ----------------------------
 DROP TABLE IF EXISTS `booking_facility`;
@@ -55,6 +59,10 @@ CREATE TABLE `booking_facility`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预约订单设施明细表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
+-- Records of booking_facility
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for booking_order
 -- ----------------------------
 DROP TABLE IF EXISTS `booking_order`;
@@ -73,8 +81,6 @@ CREATE TABLE `booking_order`  (
   `remarks` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注信息',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `points_used` int NULL DEFAULT 0 COMMENT '积分使用数量',
-  `points_discount` decimal(10, 2) NULL DEFAULT 0.00 COMMENT '积分抵扣金额',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uq_order_no`(`order_no` ASC) USING BTREE,
   INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
@@ -85,6 +91,14 @@ CREATE TABLE `booking_order`  (
   CONSTRAINT `fk_order_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_order_venue` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预约订单表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of booking_order
+-- ----------------------------
+INSERT INTO `booking_order` VALUES (4, '202505121858142abdc5', 10004, 2, NULL, '2025-05-13', '08:00:00', '09:00:00', 2, 12.00, 0, '123', '2025-05-12 18:58:14', '2025-05-12 19:06:40');
+INSERT INTO `booking_order` VALUES (5, '20250513110441dfbde6', 10004, 2, NULL, '2025-05-16', '08:00:00', '09:00:00', 2, 12.00, 2, '要助教', '2025-05-13 11:04:42', '2025-05-13 11:35:29');
+INSERT INTO `booking_order` VALUES (6, '20250513120704846e17', 10006, 2, NULL, '2025-05-13', '10:00:00', '11:00:00', 2, 12.00, 3, '要两助教', '2025-05-13 12:07:05', '2025-05-13 15:42:31');
+INSERT INTO `booking_order` VALUES (7, '20250515095932e8fbe7', 10006, 2, NULL, '2025-05-16', '08:00:00', '09:00:00', 2, 12.00, 2, '要三个助教妹妹', '2025-05-15 09:59:32', '2025-05-15 11:27:25');
 
 -- ----------------------------
 -- Table structure for booking_rule
@@ -104,129 +118,9 @@ CREATE TABLE `booking_rule`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '预约规则表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Table structure for point_coupons
+-- Records of booking_rule
 -- ----------------------------
-DROP TABLE IF EXISTS `point_coupons`;
-CREATE TABLE `point_coupons`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint NOT NULL COMMENT '用户ID',
-  `coupon_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '优惠券名称',
-  `coupon_type` tinyint NOT NULL COMMENT '优惠券类型：1-满减 2-折扣 3-代金券',
-  `discount_value` decimal(10, 2) NOT NULL COMMENT '优惠值',
-  `min_order_amount` decimal(10, 2) NULL DEFAULT NULL COMMENT '最低订单金额',
-  `valid_start_time` datetime NOT NULL COMMENT '有效期开始时间',
-  `valid_end_time` datetime NOT NULL COMMENT '有效期结束时间',
-  `venue_id` bigint NULL DEFAULT NULL COMMENT '适用场馆ID，NULL表示全部场馆',
-  `venue_type_id` bigint NULL DEFAULT NULL COMMENT '适用场馆类型ID，NULL表示全部类型',
-  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0-已作废 1-未使用 2-已使用 3-已过期',
-  `used_time` datetime NULL DEFAULT NULL COMMENT '使用时间',
-  `used_order_id` bigint NULL DEFAULT NULL COMMENT '使用的订单ID',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `order_no` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '兑换订单编号',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `idx_status`(`status` ASC) USING BTREE,
-  INDEX `idx_valid_time`(`valid_end_time` ASC) USING BTREE,
-  INDEX `idx_order_no`(`order_no` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分优惠券表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for point_exchanges
--- ----------------------------
-DROP TABLE IF EXISTS `point_exchanges`;
-CREATE TABLE `point_exchanges`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint NOT NULL COMMENT '用户ID',
-  `product_id` bigint NOT NULL COMMENT '商品ID',
-  `exchange_points` int NOT NULL COMMENT '兑换积分',
-  `exchange_status` tinyint NOT NULL DEFAULT 1 COMMENT '状态：1-待处理 2-已完成 3-已取消',
-  `contact_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '联系人姓名',
-  `contact_phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '联系电话',
-  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '收货地址',
-  `remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
-  `delivery_info` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '发货信息',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `order_no` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '兑换订单编号',
-  `exchange_quantity` int NOT NULL DEFAULT 1 COMMENT '兑换数量',
-  `process_time` datetime NULL DEFAULT NULL COMMENT '处理时间',
-  `process_admin_id` bigint NULL DEFAULT NULL COMMENT '处理管理员ID',
-  `process_remarks` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '处理备注',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `idx_product_id`(`product_id` ASC) USING BTREE,
-  INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
-  UNIQUE INDEX `idx_order_no`(`order_no` ASC) USING BTREE,
-  INDEX `idx_exchange_status`(`exchange_status` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分兑换记录表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for point_products
--- ----------------------------
-DROP TABLE IF EXISTS `point_products`;
-CREATE TABLE `point_products`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `product_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '商品名称',
-  `product_type` tinyint NOT NULL COMMENT '商品类型：1-优惠券 2-实物 3-虚拟物品 4-会员特权',
-  `points_required` int NOT NULL COMMENT '所需积分',
-  `original_price` decimal(10, 2) NULL DEFAULT NULL COMMENT '原价',
-  `stock` int NULL DEFAULT NULL COMMENT '库存，-1表示无限',
-  `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '商品描述',
-  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '商品图片URL',
-  `start_time` datetime NULL DEFAULT NULL COMMENT '开始时间',
-  `end_time` datetime NULL DEFAULT NULL COMMENT '结束时间',
-  `daily_limit` int NULL DEFAULT NULL COMMENT '每人每日兑换限制',
-  `total_limit` int NULL DEFAULT NULL COMMENT '每人总兑换限制',
-  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0-下架 1-上架',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `exchange_count` int NOT NULL DEFAULT 0 COMMENT '已兑换次数',
-  `product_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '商品编码',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_status`(`status` ASC) USING BTREE,
-  INDEX `idx_points`(`points_required` ASC) USING BTREE,
-  INDEX `idx_start_end_time`(`start_time` ASC, `end_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分商品表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for point_records
--- ----------------------------
-DROP TABLE IF EXISTS `point_records`;
-CREATE TABLE `point_records`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint NOT NULL COMMENT '用户ID',
-  `point_type` tinyint NOT NULL COMMENT '积分类型：1-获取 2-使用 3-过期 4-冻结 5-解冻',
-  `points` int NOT NULL COMMENT '积分变动数量',
-  `balance` int NOT NULL COMMENT '变动后积分余额',
-  `source_type` tinyint NOT NULL COMMENT '来源类型：1-预约 2-评价 3-签到 4-邀请 5-兑换 6-抵扣 7-过期 8-其他',
-  `source_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '来源ID，关联相应的订单ID等',
-  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '描述',
-  `expire_time` datetime NULL DEFAULT NULL COMMENT '过期时间',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `related_exchange_id` bigint NULL DEFAULT NULL COMMENT '关联的兑换记录ID',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `idx_create_time`(`create_time` ASC) USING BTREE,
-  INDEX `idx_expire_time`(`expire_time` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分记录表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for point_rules
--- ----------------------------
-DROP TABLE IF EXISTS `point_rules`;
-CREATE TABLE `point_rules`  (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `rule_type` tinyint NOT NULL COMMENT '规则类型：1-预约 2-评价 3-签到 4-邀请 5-其他',
-  `rule_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '规则名称',
-  `point_value` int NOT NULL COMMENT '积分值',
-  `rule_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '规则描述',
-  `validity_days` int NULL DEFAULT 365 COMMENT '积分有效期(天)',
-  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0-禁用 1-启用',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '积分规则表' ROW_FORMAT = Dynamic;
+INSERT INTO `booking_rule` VALUES (1, 'booking_limit', 'max_daily_bookings', '2', '每名用户每天最多只能预约两条', 1, '2025-05-12 19:36:03', '2025-05-12 19:36:03');
 
 -- ----------------------------
 -- Table structure for price_strategy
@@ -250,6 +144,10 @@ CREATE TABLE `price_strategy`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '价格策略表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
+-- Records of price_strategy
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for special_date_rule
 -- ----------------------------
 DROP TABLE IF EXISTS `special_date_rule`;
@@ -263,7 +161,11 @@ CREATE TABLE `special_date_rule`  (
   `updated_at` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `idx_special_date`(`special_date` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '特殊日期规则表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '特殊日期规则表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of special_date_rule
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for time_slot
@@ -282,6 +184,10 @@ CREATE TABLE `time_slot`  (
   INDEX `idx_venue_id`(`venue_id` ASC) USING BTREE,
   CONSTRAINT `fk_time_slot_venue` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '时间段设置表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of time_slot
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for user
@@ -315,21 +221,12 @@ CREATE TABLE `user`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 10007 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
--- Table structure for user_points
+-- Records of user
 -- ----------------------------
-DROP TABLE IF EXISTS `user_points`;
-CREATE TABLE `user_points`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `user_id` bigint NOT NULL COMMENT '用户ID',
-  `total_points` int NOT NULL DEFAULT 0 COMMENT '总积分',
-  `available_points` int NOT NULL DEFAULT 0 COMMENT '可用积分',
-  `frozen_points` int NOT NULL DEFAULT 0 COMMENT '冻结积分',
-  `expired_points` int NOT NULL DEFAULT 0 COMMENT '已过期积分',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `idx_user_id`(`user_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户积分账户表' ROW_FORMAT = Dynamic;
+INSERT INTO `user` VALUES (10003, 'admin', '$2a$10$.UP8DmC3WB9nJ36FyFhZzOVxSNsaynaZsrFQwfaIrmoZsA61WImRu', 'gvmsrph93m1qwhk9', 'xiaoqingming18@163.com', '15556916571', '小吊乐管理员', NULL, 'other', NULL, NULL, 1, 2, 0, '2025-05-16 11:27:57', '127.0.0.1', '2025-05-07 18:51:03', '127.0.0.1', '2025-05-07 18:51:02');
+INSERT INTO `user` VALUES (10004, 'xiaoqingming18', '$2a$10$K2Qoj/T9LjLv2JgcrngWz.vPpnn3r/1pDJ8KcA3xUUXgsSBoA9H8.', 'av1oqdkw8t2fa7lc', 'testuser@test.com', '15567675656', '小清明十八', NULL, 'other', NULL, NULL, 1, 1, 2, '2025-05-13 16:56:06', '127.0.0.1', '2025-05-09 15:50:50', '127.0.0.1', '2025-05-09 15:50:50');
+INSERT INTO `user` VALUES (10005, 'xiaoqingming', '$2a$10$jkbmg58MIHdtfYCrd28JwuZcHq6Gdu36neC817CfeKW2d/npmuLqG', '2u9zcazmzvss51v5', 'testuser2@test.com', '15567675653', '小清明十八', NULL, 'other', NULL, NULL, 1, 1, 0, '2025-05-12 20:14:21', '127.0.0.1', '2025-05-12 20:14:20', '127.0.0.1', '2025-05-12 20:14:20');
+INSERT INTO `user` VALUES (10006, 'BirdSuper', '$2a$10$u3aFZA16Oph/bMuOaTz12ejESZjjB8I2aU.Z0hgwdFcQbuBOebkMm', 'vt0ddfjbiun64txl', '31142582@qq.com', '18326381722', '鸟超', NULL, 'other', NULL, NULL, 1, 1, 0, '2025-05-16 10:13:47', '127.0.0.1', '2025-05-13 12:06:24', '127.0.0.1', '2025-05-13 12:06:23');
 
 -- ----------------------------
 -- Table structure for venue
@@ -358,6 +255,12 @@ CREATE TABLE `venue`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '场馆表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
+-- Records of venue
+-- ----------------------------
+INSERT INTO `venue` VALUES (1, '羽毛球一号馆', 4, 15.00, 20, '测试地址', '这是一号羽毛球场馆', '09:00-22:00', '15556916571', NULL, 1, '2025-05-09 15:39:19', '2025-05-09 15:39:19', 0, 0);
+INSERT INTO `venue` VALUES (2, '狗狗羽毛球馆', 4, 30.00, 20, '狗狗场馆地址', '狗狗场馆描述', '10:00-20:00', '15556916571', 'http://192.168.200.60:9000/venue/fef2a527-38b4-48b3-8c8d-ef6f601f13f7.png', 1, '2025-05-10 23:59:23', '2025-05-11 09:31:23', 0, 0);
+
+-- ----------------------------
 -- Table structure for venue_facility
 -- ----------------------------
 DROP TABLE IF EXISTS `venue_facility`;
@@ -375,6 +278,11 @@ CREATE TABLE `venue_facility`  (
   INDEX `idx_facility_type`(`facility_type` ASC) USING BTREE,
   CONSTRAINT `fk_venue_facility` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '场馆设施明细表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of venue_facility
+-- ----------------------------
+INSERT INTO `venue_facility` VALUES (1, 2, '羽毛球场地', 4, '{\"area\": \"主区域\", \"floor\": \"1\", \"details\": \"\", \"section\": \"A\"}', 12.00, '2025-05-12 14:22:49', '2025-05-12 15:25:17');
 
 -- ----------------------------
 -- Table structure for venue_location
@@ -395,6 +303,10 @@ CREATE TABLE `venue_location`  (
   INDEX `idx_status`(`status` ASC) USING BTREE,
   CONSTRAINT `venue_location_ibfk_1` FOREIGN KEY (`venue_id`) REFERENCES `venue` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '场馆位置表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of venue_location
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for venue_review
@@ -426,6 +338,11 @@ CREATE TABLE `venue_review`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '场馆评价表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
+-- Records of venue_review
+-- ----------------------------
+INSERT INTO `venue_review` VALUES (1, 6, 10006, 2, '助教妹妹好好看', 5, 5, 5, 4, 4, '[\"http://192.168.167.159:9000/venue/2025/05/13/14dac941e2054c9ca9fc4c63c94ac527.jpg\"]', 0, '2025-05-13 16:16:01', '2025-05-14 14:39:23', 0);
+
+-- ----------------------------
 -- Table structure for venue_review_ban
 -- ----------------------------
 DROP TABLE IF EXISTS `venue_review_ban`;
@@ -446,6 +363,10 @@ CREATE TABLE `venue_review_ban`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价封禁记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of venue_review_ban
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for venue_review_reply
 -- ----------------------------
 DROP TABLE IF EXISTS `venue_review_reply`;
@@ -461,6 +382,14 @@ CREATE TABLE `venue_review_reply`  (
   INDEX `idx_review_id`(`review_id` ASC) USING BTREE,
   CONSTRAINT `fk_reply_review` FOREIGN KEY (`review_id`) REFERENCES `venue_review` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价回复表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of venue_review_reply
+-- ----------------------------
+INSERT INTO `venue_review_reply` VALUES (1, 1, 10006, '真的哦！', 0, '2025-05-14 16:06:30', '2025-05-14 16:06:30');
+INSERT INTO `venue_review_reply` VALUES (2, 1, 10006, '666', 0, '2025-05-14 16:33:07', '2025-05-14 16:33:07');
+INSERT INTO `venue_review_reply` VALUES (3, 1, 10003, '贴脸开大', 1, '2025-05-14 18:31:17', '2025-05-14 18:31:17');
+INSERT INTO `venue_review_reply` VALUES (4, 1, 10006, '就是好看', 0, '2025-05-15 11:29:50', '2025-05-15 11:29:50');
 
 -- ----------------------------
 -- Table structure for venue_review_report
@@ -486,6 +415,11 @@ CREATE TABLE `venue_review_report`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评价举报表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of venue_review_report
+-- ----------------------------
+INSERT INTO `venue_review_report` VALUES (1, 1, 10004, '含有不当言论', '妈的鸟超涉黄', 0, 10003, '', '2025-05-14 11:13:06', '2025-05-14 14:38:19');
+
+-- ----------------------------
 -- Table structure for venue_type
 -- ----------------------------
 DROP TABLE IF EXISTS `venue_type`;
@@ -498,5 +432,10 @@ CREATE TABLE `venue_type`  (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '场馆类型表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of venue_type
+-- ----------------------------
+INSERT INTO `venue_type` VALUES (4, '羽毛球馆', '添加羽毛球设施', 10.00, '2025-05-09 15:38:19', '2025-05-09 15:38:19');
 
 SET FOREIGN_KEY_CHECKS = 1;
