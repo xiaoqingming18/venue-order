@@ -10,11 +10,24 @@ const request = axios.create({
   },
 })
 
+// 存储跳过认证的请求URL
+const skipAuthRequests = new Set();
+
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
     // 检查是否需要跳过鉴权
     const skipAuth = config.headers && config.headers['X-Skip-Auth'] === 'true'
+    
+    // 保存跳过认证的请求URL，用于响应拦截器判断
+    if (skipAuth && config.url) {
+      skipAuthRequests.add(config.url);
+      
+      // 设置一个定时器，防止内存泄漏，在请求完成后一段时间删除
+      setTimeout(() => {
+        skipAuthRequests.delete(config.url);
+      }, 60000); // 60秒后删除
+    }
     
     // 从localStorage获取token（如果不需要跳过鉴权）
     if (!skipAuth) {
@@ -69,13 +82,16 @@ request.interceptors.response.use(
     const res = response.data
     console.log('收到响应:', response.config.url, res)
 
+    // 判断是否为跳过认证的请求
+    const isSkipAuthRequest = response.config.url && skipAuthRequests.has(response.config.url);
+
     // 如果返回的状态码不是200，说明请求出错
     if (res.code !== 200 && res.code !== undefined) {
       console.error('接口错误', res.message || '系统错误')
       ElMessage.error(res.message || '请求失败')
 
       // 401表示未授权，可能是token过期
-      if (res.code === 401) {
+      if (res.code === 401 && !isSkipAuthRequest) {
         // 清除token并重定向到登录页
         localStorage.removeItem('userToken')
         window.location.href = '/login'
@@ -129,7 +145,10 @@ request.interceptors.response.use(
       }
     }
 
-    if (error.response && error.response.status === 401) {
+    // 判断是否为跳过认证的请求
+    const isSkipAuthRequest = error.config && error.config.url && skipAuthRequests.has(error.config.url);
+
+    if (error.response && error.response.status === 401 && !isSkipAuthRequest) {
       // 清除token并重定向到登录页
       ElMessage.error('登录已过期，请重新登录')
       localStorage.removeItem('userToken')
