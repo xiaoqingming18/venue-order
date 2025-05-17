@@ -6,6 +6,8 @@ import com.xcl.venueserver.dto.FeedbackDTO;
 import com.xcl.venueserver.entity.UserFeedback;
 import com.xcl.venueserver.vo.UserFeedbackVO;
 
+import java.util.Map;
+
 /**
  * 用户反馈服务接口
  */
@@ -56,4 +58,10 @@ public interface UserFeedbackService extends IService<UserFeedback> {
      * @return 是否成功
      */
     boolean updateFeedbackStatus(Long id, Integer status);
+    
+    /**
+     * 获取反馈统计数据
+     * @return 统计数据
+     */
+    Map<String, Object> getFeedbackStats();
 } 

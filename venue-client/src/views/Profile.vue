@@ -48,13 +48,6 @@ const menuItems = [
     route: '/feedback'
   },
   {
-    id: 'message',
-    title: '我的消息',
-    icon: 'bell',
-    color: '#F56C6C',
-    route: '/message'
-  },
-  {
     id: 'settings',
     title: '账号设置',
     icon: 'cog',
@@ -174,6 +167,10 @@ onMounted(async () => {
       <a class="tab-item" @click="navigateTo('/orders')">
         <i class="fas fa-calendar-alt"></i>
         <span>订单</span>
+      </a>
+      <a class="tab-item" @click="navigateTo('/message')">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
       </a>
       <a class="tab-item active" @click="navigateTo('/profile')">
         <i class="fas fa-user"></i>

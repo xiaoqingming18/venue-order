@@ -51,10 +51,17 @@ public class FeedbackReplyServiceImpl extends ServiceImpl<FeedbackReplyMapper, F
             throw new IllegalArgumentException("反馈不存在");
         }
         
+        // 查询管理员信息
+        User admin = userMapper.selectById(adminId);
+        if (admin == null) {
+            throw new IllegalArgumentException("管理员信息不存在");
+        }
+        
         // 创建回复
         FeedbackReply reply = new FeedbackReply();
         reply.setFeedbackId(replyDTO.getFeedbackId());
         reply.setAdminId(adminId);
+        reply.setAdminName(admin.getNickname() != null ? admin.getNickname() : admin.getUsername());
         reply.setContent(replyDTO.getContent());
         reply.setCreatedAt(LocalDateTime.now());
         reply.setUpdatedAt(LocalDateTime.now());
@@ -117,6 +124,10 @@ public class FeedbackReplyServiceImpl extends ServiceImpl<FeedbackReplyMapper, F
                     if (admin != null) {
                         vo.setAdminUsername(admin.getUsername());
                         vo.setAdminNickname(admin.getNickname());
+                    } else {
+                        // 如果找不到管理员信息，使用回复表中保存的adminName
+                        vo.setAdminUsername(reply.getAdminName());
+                        vo.setAdminNickname(reply.getAdminName());
                     }
                     
                     return vo;

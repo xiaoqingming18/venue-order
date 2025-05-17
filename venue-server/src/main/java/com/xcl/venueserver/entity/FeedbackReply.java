@@ -29,6 +29,11 @@ public class FeedbackReply {
      * 管理员ID
      */
     private Long adminId;
+    
+    /**
+     * 管理员名称
+     */
+    private String adminName;
 
     /**
      * 回复内容

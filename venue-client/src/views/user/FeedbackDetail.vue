@@ -48,22 +48,57 @@
       </van-cell-group>
       
       <van-empty v-else description="暂无回复" />
+      
+      <div class="action-buttons" v-if="feedback.status === 2">
+        <van-button type="primary" block round @click="handleCloseFeedback">
+          问题已解决，关闭反馈
+        </van-button>
+      </div>
     </div>
     
     <van-loading v-else type="spinner" vertical>加载中...</van-loading>
+    
+    <van-dialog
+      v-model:show="showConfirmDialog"
+      title="确认关闭"
+      message="确定要关闭此反馈吗？关闭后表示问题已解决。"
+      show-cancel-button
+      @confirm="confirmCloseFeedback"
+    />
+
+    <!-- iOS底部标签栏 -->
+    <div class="ios-tab-bar">
+      <a class="tab-item" @click="router.push('/')">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a class="tab-item" @click="router.push('/orders')">
+        <i class="fas fa-calendar-alt"></i>
+        <span>订单</span>
+      </a>
+      <a class="tab-item" @click="router.push('/message')">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
+      </a>
+      <a class="tab-item" @click="router.push('/profile')">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { showToast, showImagePreview } from 'vant'
-import { getFeedbackDetail } from '@/api/feedback.js'
+import { showToast, showImagePreview, showSuccessToast } from 'vant'
+import { getFeedbackDetail, closeFeedback } from '@/api/feedback.js'
 import type { UserFeedback } from '@/types/feedback'
 
 const route = useRoute()
 const router = useRouter()
 const feedback = ref<UserFeedback | null>(null)
+const showConfirmDialog = ref(false)
 
 // 获取反馈详情
 const loadFeedbackDetail = async () => {
@@ -92,6 +127,29 @@ const previewImage = (index: number) => {
   }
 }
 
+// 处理关闭反馈
+const handleCloseFeedback = () => {
+  showConfirmDialog.value = true
+}
+
+// 确认关闭反馈
+const confirmCloseFeedback = async () => {
+  if (!feedback.value) return
+  
+  try {
+    await closeFeedback(feedback.value.id)
+    showSuccessToast('反馈已关闭')
+    
+    // 更新本地反馈状态
+    if (feedback.value) {
+      feedback.value.status = 3
+      feedback.value.statusName = '已关闭'
+    }
+  } catch (error) {
+    showToast('操作失败，请重试')
+  }
+}
+
 // 返回
 const goBack = () => {
   router.back()
@@ -105,6 +163,7 @@ onMounted(() => {
 <style scoped>
 .feedback-detail-container {
   padding-top: 46px;
+  padding-bottom: 70px; /* 添加底部padding，为底部导航栏留出空间 */
   min-height: 100vh;
   background-color: #f7f8fa;
 }
@@ -159,6 +218,7 @@ onMounted(() => {
 
 .reply-content {
   line-height: 1.5;
+  color: #323233;
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -187,5 +247,48 @@ onMounted(() => {
 .status-3 {
   background-color: #f2f3f5;
   color: #646566;
+}
+
+.action-buttons {
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.close-button {
+  margin-top: 20px;
+}
+
+/* iOS底部标签栏样式 */
+.ios-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: white;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  z-index: 100;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #8e8e93;
+  font-size: 10px;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.tab-item i {
+  font-size: 20px;
+  margin-bottom: 3px;
+}
+
+.tab-item.active {
+  color: #1989fa;
 }
 </style> 

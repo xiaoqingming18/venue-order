@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * 用户反馈控制器
@@ -165,6 +166,71 @@ public class UserFeedbackController {
             }
         } catch (Exception e) {
             log.error("更新反馈状态失败", e);
+            return Result.error("更新反馈状态失败：" + e.getMessage());
+        }
+    }
+    
+    /**
+     * 获取反馈统计数据（管理员使用）
+     */
+    @GetMapping("/admin/stats")
+    public Result<Map<String, Object>> getFeedbackStats() {
+        try {
+            Long userId = currentUser.getUserId();
+            if (userId == null) {
+                return Result.error(401, "用户未登录或登录已过期");
+            }
+            
+            // 验证是否为管理员
+            if (currentUser.getUserRole() != 2) {
+                return Result.error(403, "无权访问此接口");
+            }
+            
+            Map<String, Object> stats = userFeedbackService.getFeedbackStats();
+            return Result.success(stats);
+        } catch (Exception e) {
+            log.error("获取反馈统计数据失败", e);
+            return Result.error("获取反馈统计数据失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 用户更新自己的反馈状态（例如关闭反馈）
+     */
+    @PostMapping("/update-status")
+    public Result<Boolean> updateUserFeedbackStatus(
+            @RequestParam Long id,
+            @RequestParam Integer status) {
+        try {
+            Long userId = currentUser.getUserId();
+            if (userId == null) {
+                return Result.error(401, "用户未登录或登录已过期");
+            }
+            
+            // 获取反馈详情，检查是否属于当前用户
+            UserFeedbackVO feedbackVO = userFeedbackService.getFeedbackDetail(id);
+            if (feedbackVO == null) {
+                return Result.error("反馈不存在");
+            }
+            
+            // 验证是否是当前用户的反馈
+            if (!feedbackVO.getUserId().equals(userId)) {
+                return Result.error(403, "无权修改此反馈");
+            }
+            
+            // 用户只能将反馈标记为"已关闭"状态(3)
+            if (status != 3) {
+                return Result.error("用户只能将反馈标记为已关闭状态");
+            }
+            
+            boolean success = userFeedbackService.updateFeedbackStatus(id, status);
+            if (success) {
+                return Result.success(true, "反馈已关闭");
+            } else {
+                return Result.error("更新状态失败");
+            }
+        } catch (Exception e) {
+            log.error("用户更新反馈状态失败", e);
             return Result.error("更新反馈状态失败：" + e.getMessage());
         }
     }

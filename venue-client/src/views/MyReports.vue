@@ -170,6 +170,10 @@ onMounted(() => {
         <i class="fas fa-calendar-alt"></i>
         <span>订单</span>
       </a>
+      <a class="tab-item" @click="router.push('/message')">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
+      </a>
       <a class="tab-item active" @click="router.push('/profile')">
         <i class="fas fa-user"></i>
         <span>我的</span>

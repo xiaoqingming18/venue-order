@@ -41,6 +41,7 @@ const navigateTo = (path: string) => {
             <el-button type="primary" @click="navigateTo('/home/venues')">场馆管理</el-button>
             <el-button type="primary" @click="navigateTo('/home/bookings')">预约管理</el-button>
             <el-button type="primary">审核管理</el-button>
+            <el-button type="primary" @click="navigateTo('/home/feedback')">反馈管理</el-button>
           </el-button-group>
         </div>
       </div>

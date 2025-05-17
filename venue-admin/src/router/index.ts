@@ -136,6 +136,18 @@ const router = createRouter({
           component: () => import('../views/review/ReviewDetailView.vue'),
           meta: { requiresAdmin: true },
         },
+        {
+          path: 'feedback',
+          name: 'feedback',
+          component: () => import('../views/feedback/FeedbackListView.vue'),
+          meta: { requiresAdmin: true },
+        },
+        {
+          path: 'feedback/detail/:id',
+          name: 'feedbackDetail',
+          component: () => import('../views/feedback/FeedbackDetailView.vue'),
+          meta: { requiresAdmin: true },
+        },
       ],
     },
     {

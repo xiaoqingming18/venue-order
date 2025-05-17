@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -218,6 +219,112 @@ public class UserFeedbackServiceImpl extends ServiceImpl<UserFeedbackMapper, Use
         feedback.setStatus(status);
         feedback.setUpdatedAt(LocalDateTime.now());
         return updateById(feedback);
+    }
+    
+    @Override
+    public Map<String, Object> getFeedbackStats() {
+        Map<String, Object> stats = new HashMap<>();
+        
+        try {
+            // 总数统计
+            long total = count();
+            stats.put("total", total);
+            
+            // 各状态统计
+            LambdaQueryWrapper<UserFeedback> pendingWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .eq(UserFeedback::getStatus, 0);
+            long pending = count(pendingWrapper);
+            stats.put("pending", pending);
+            
+            LambdaQueryWrapper<UserFeedback> processingWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .eq(UserFeedback::getStatus, 1);
+            long processing = count(processingWrapper);
+            stats.put("processing", processing);
+            
+            LambdaQueryWrapper<UserFeedback> repliedWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .eq(UserFeedback::getStatus, 2);
+            long replied = count(repliedWrapper);
+            stats.put("replied", replied);
+            
+            LambdaQueryWrapper<UserFeedback> closedWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .eq(UserFeedback::getStatus, 3);
+            long closed = count(closedWrapper);
+            stats.put("closed", closed);
+            
+            // 今日数量统计
+            LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+            LambdaQueryWrapper<UserFeedback> todayWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .ge(UserFeedback::getCreatedAt, today);
+            long todayCount = count(todayWrapper);
+            stats.put("todayCount", todayCount);
+            
+            // 本周数量统计
+            LocalDateTime weekStart = today.minusDays(today.getDayOfWeek().getValue() - 1);
+            LambdaQueryWrapper<UserFeedback> weekWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .ge(UserFeedback::getCreatedAt, weekStart);
+            long weekCount = count(weekWrapper);
+            stats.put("weekCount", weekCount);
+            
+            // 本月数量统计
+            LocalDateTime monthStart = today.withDayOfMonth(1);
+            LambdaQueryWrapper<UserFeedback> monthWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                    .ge(UserFeedback::getCreatedAt, monthStart);
+            long monthCount = count(monthWrapper);
+            stats.put("monthCount", monthCount);
+            
+            // 按类型统计分布
+            List<Map<String, Object>> typeDistribution = new ArrayList<>();
+            for (int type = 1; type <= 4; type++) {
+                final int typeVal = type;
+                LambdaQueryWrapper<UserFeedback> typeWrapper = Wrappers.<UserFeedback>lambdaQuery()
+                        .eq(UserFeedback::getType, typeVal);
+                long typeCount = count(typeWrapper);
+                
+                Map<String, Object> typeData = new HashMap<>();
+                typeData.put("type", typeVal);
+                typeData.put("count", typeCount);
+                
+                // 计算百分比
+                double percentage = total > 0 ? (double) typeCount / total * 100 : 0;
+                typeData.put("percentage", Math.round(percentage * 100) / 100.0); // 保留两位小数
+                
+                // 设置类型名称
+                switch (typeVal) {
+                    case 1:
+                        typeData.put("typeName", "问题反馈");
+                        break;
+                    case 2:
+                        typeData.put("typeName", "功能建议");
+                        break;
+                    case 3:
+                        typeData.put("typeName", "投诉");
+                        break;
+                    case 4:
+                        typeData.put("typeName", "其他");
+                        break;
+                    default:
+                        typeData.put("typeName", "未知");
+                }
+                
+                typeDistribution.add(typeData);
+            }
+            stats.put("typeDistribution", typeDistribution);
+            
+        } catch (Exception e) {
+            log.error("获取反馈统计数据失败", e);
+            // 出错时返回空统计
+            stats.put("total", 0);
+            stats.put("pending", 0);
+            stats.put("processing", 0);
+            stats.put("replied", 0);
+            stats.put("closed", 0);
+            stats.put("todayCount", 0);
+            stats.put("weekCount", 0);
+            stats.put("monthCount", 0);
+            stats.put("typeDistribution", new ArrayList<>());
+        }
+        
+        return stats;
     }
     
     /**

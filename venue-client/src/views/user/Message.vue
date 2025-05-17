@@ -1,23 +1,14 @@
 <template>
   <div class="message-container">
-    <van-nav-bar 
-      title="我的消息" 
+    <van-nav-bar
+      title="消息中心"
       left-arrow
       @click-left="goBack"
+      right-text="全部已读"
+      :right-text="hasUnread ? '全部已读' : ''"
+      @click-right="handleMarkAllAsRead"
       fixed
-    >
-      <template #right>
-        <van-button 
-          type="text" 
-          size="small" 
-          class="read-all-btn" 
-          @click="handleMarkAllAsRead"
-          v-if="hasUnread"
-        >
-          全部标为已读
-        </van-button>
-      </template>
-    </van-nav-bar>
+    />
     
     <div class="message-list">
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
@@ -27,44 +18,48 @@
           finished-text="没有更多了"
           @load="onLoad"
         >
-          <van-empty v-if="messageList.length === 0" description="暂无消息记录" />
-          
-          <van-swipe-cell
-            v-for="item in messageList"
-            :key="item.id"
-            :before-close="beforeClose"
-          >
-            <van-cell
-              :class="{ 'unread': item.isRead === 0 }"
-              :title="item.title"
-              :label="item.createdAt"
-              @click="handleReadMessage(item)"
-            >
-              <template #value>
-                <span class="message-type">{{ item.typeName }}</span>
-              </template>
-            </van-cell>
-            <template #right>
-              <van-button
-                square
-                text="删除"
-                type="danger"
-                class="delete-button"
-                @click="() => showDeleteDialog(item.id)"
-              />
-            </template>
-          </van-swipe-cell>
+          <template v-if="!loading">
+            <van-empty v-if="messageList.length === 0" description="暂无消息" />
+            
+            <div v-else>
+              <van-swipe-cell
+                v-for="item in messageList"
+                :key="item.id"
+                :name="item.id"
+                :before-close="beforeClose"
+              >
+                <van-cell
+                  :class="{ unread: item.isRead === 0 }"
+                  :title="item.title"
+                  :label="item.createdAt"
+                  @click="handleReadMessage(item)"
+                >
+                  <template #value>
+                    <span class="message-type">{{ item.typeName }}</span>
+                  </template>
+                </van-cell>
+                
+                <template #right>
+                  <van-button 
+                    square 
+                    text="删除" 
+                    type="danger" 
+                    class="delete-button" 
+                    @click="showDeleteDialog(item.id)"
+                  />
+                </template>
+              </van-swipe-cell>
+            </div>
+          </template>
         </van-list>
       </van-pull-refresh>
     </div>
     
     <van-dialog
       v-model:show="showDialog"
-      title="消息详情"
+      title=""
+      :show-confirm-button="false"
       class="message-dialog"
-      show-cancel-button
-      confirmButtonText="关闭"
-      :showConfirmButton="false"
     >
       <div class="message-detail" v-if="currentMessage">
         <h3 class="message-title">{{ currentMessage.title }}</h3>
@@ -86,11 +81,54 @@
         </div>
       </div>
     </van-dialog>
+
+    <!-- 新消息提示 -->
+    <van-popup
+      v-model:show="showNewMessage"
+      position="top"
+      :style="{ height: 'auto' }"
+      duration="0.3"
+      round
+      overlay-class="feedback-message-overlay"
+    >
+      <div class="new-feedback-message" @click="handleNewMessageClick">
+        <div class="message-icon">
+          <van-icon name="chat" size="24" color="#1989fa" />
+        </div>
+        <div class="message-text">
+          <div class="message-title">{{ newMessage.title }}</div>
+          <div class="message-brief">{{ newMessage.content }}</div>
+        </div>
+        <div class="message-action">
+          <van-icon name="arrow" color="#969799" />
+        </div>
+      </div>
+    </van-popup>
+    
+    <!-- iOS底部标签栏 -->
+    <div class="ios-tab-bar">
+      <a class="tab-item" @click="router.push('/')">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a class="tab-item" @click="router.push('/orders')">
+        <i class="fas fa-calendar-alt"></i>
+        <span>订单</span>
+      </a>
+      <a class="tab-item active" @click="router.push('/message')">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
+      </a>
+      <a class="tab-item" @click="router.push('/profile')">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showSuccessToast, showFailToast, SwipeCell } from 'vant'
 import { getUserMessages, markAsRead, markAllAsRead, deleteMessage } from '@/api/message.js'
@@ -105,6 +143,8 @@ const pageNum = ref(1)
 const pageSize = ref(10)
 const showDialog = ref(false)
 const currentMessage = ref<UserMessage | null>(null)
+const showNewMessage = ref(false)
+const newMessage = ref<UserMessage | null>(null)
 
 // 是否有未读消息
 const hasUnread = computed(() => {
@@ -125,6 +165,23 @@ const onLoad = async () => {
     if (data.records && data.records.length > 0) {
       messageList.value.push(...data.records)
       pageNum.value++
+      
+      // 检查是否有未读的反馈回复消息，如果有则显示通知
+      const unreadFeedbackMessages = data.records.filter(msg => 
+        msg.type === 3 && msg.isRead === 0
+      )
+      
+      if (unreadFeedbackMessages.length > 0 && !showDialog.value) {
+        newMessage.value = unreadFeedbackMessages[0]
+        setTimeout(() => {
+          showNewMessage.value = true
+          
+          // 5秒后自动关闭
+          setTimeout(() => {
+            showNewMessage.value = false
+          }, 5000)
+        }, 500)
+      }
     }
     
     loading.value = false
@@ -139,8 +196,8 @@ const onLoad = async () => {
 
 // 下拉刷新
 const onRefresh = () => {
+  refreshing.value = true
   finished.value = false
-  loading.value = true
   pageNum.value = 1
   onLoad()
 }
@@ -162,6 +219,23 @@ const handleReadMessage = async (message: UserMessage) => {
     } catch (error) {
       // 忽略错误
     }
+  }
+}
+
+// 处理新消息点击
+const handleNewMessageClick = () => {
+  if (newMessage.value) {
+    showNewMessage.value = false
+    goToFeedbackDetail(newMessage.value.relatedId)
+    
+    // 标记为已读
+    markAsRead(newMessage.value.id).then(() => {
+      // 更新消息列表中的已读状态
+      const index = messageList.value.findIndex(item => item.id === newMessage.value?.id)
+      if (index !== -1) {
+        messageList.value[index].isRead = 1
+      }
+    })
   }
 }
 
@@ -230,6 +304,7 @@ onMounted(() => {
 <style scoped>
 .message-container {
   padding-top: 46px;
+  padding-bottom: 70px;
   min-height: 100vh;
   background-color: #f7f8fa;
 }
@@ -310,13 +385,94 @@ onMounted(() => {
 }
 
 .message-content {
-  line-height: 1.6;
+  line-height: 1.5;
+  color: #323233;
+  margin-bottom: 16px;
   white-space: pre-wrap;
   word-break: break-all;
-  margin-bottom: 16px;
 }
 
 .message-action {
-  margin-top: 16px;
+  padding-top: 8px;
+}
+
+/* 新消息通知样式 */
+.feedback-message-overlay {
+  background-color: transparent;
+}
+
+.new-feedback-message {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  cursor: pointer;
+}
+
+.message-icon {
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.message-text {
+  flex: 1;
+  overflow: hidden;
+}
+
+.message-text .message-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+  text-align: left;
+}
+
+.message-text .message-brief {
+  font-size: 12px;
+  color: #969799;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-action {
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.ios-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #e5e5e5;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #666;
+}
+
+.tab-item i {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.tab-item span {
+  font-size: 12px;
+}
+
+.tab-item.active {
+  color: #1989fa;
 }
 </style> 

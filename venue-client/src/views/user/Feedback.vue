@@ -95,7 +95,10 @@
                     @click="goToDetail(item.id)"
                   >
                     <template #value>
-                      <span :class="['status', 'status-' + item.status]">{{ item.statusName }}</span>
+                      <div class="status-wrapper">
+                        <span :class="['status', 'status-' + item.status]">{{ item.statusName }}</span>
+                        <span v-if="item.status === 2 && !viewedFeedbacks.has(item.id)" class="new-reply-dot"></span>
+                      </div>
                     </template>
                   </van-cell>
                 </div>
@@ -109,11 +112,31 @@
         </div>
       </van-tab>
     </van-tabs>
+
+    <!-- iOS底部标签栏 -->
+    <div class="ios-tab-bar">
+      <a class="tab-item" @click="navigateTo('/')">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </a>
+      <a class="tab-item" @click="navigateTo('/orders')">
+        <i class="fas fa-calendar-alt"></i>
+        <span>订单</span>
+      </a>
+      <a class="tab-item" @click="navigateTo('/message')">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
+      </a>
+      <a class="tab-item" @click="navigateTo('/profile')">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+      </a>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showSuccessToast, showFailToast } from 'vant'
 import { submitFeedback, getUserFeedbackList } from '@/api/feedback.js'
@@ -156,6 +179,27 @@ const finished = ref(false)
 const refreshing = ref(false)
 const pageNum = ref(1)
 const pageSize = ref(8)
+
+// 已查看过的反馈ID集合
+const viewedFeedbacks = reactive(new Set<number>())
+
+// 加载缓存的已查看反馈记录
+const loadViewedFeedbacks = () => {
+  const cachedViewedFeedbacks = localStorage.getItem('viewedFeedbacks')
+  if (cachedViewedFeedbacks) {
+    try {
+      const feedbackIds = JSON.parse(cachedViewedFeedbacks)
+      feedbackIds.forEach((id: number) => viewedFeedbacks.add(id))
+    } catch (error) {
+      console.error('解析已查看反馈记录失败', error)
+    }
+  }
+}
+
+// 保存已查看反馈记录到本地存储
+const saveViewedFeedbacks = () => {
+  localStorage.setItem('viewedFeedbacks', JSON.stringify(Array.from(viewedFeedbacks)))
+}
 
 // 提交反馈
 const onSubmit = async () => {
@@ -205,107 +249,27 @@ const onSubmit = async () => {
 // 加载反馈列表
 const onLoad = async () => {
   try {
-    console.log('开始加载反馈列表，页码:', pageNum.value, '每页大小:', pageSize.value);
+    const { data } = await getUserFeedbackList(pageNum.value, pageSize.value)
     
-    loading.value = true
-    
-    // 如果是第一页，清空现有列表以确保显示最新数据
-    if (pageNum.value === 1 && !refreshing.value) {
-      feedbackList.value = [];
-      finished.value = false;
-    }
-    
-    const { data } = await getUserFeedbackList(pageNum.value, pageSize.value);
-    
-    console.log('获取反馈列表成功，数据:', data);
-    
-    // 下拉刷新时清空列表
     if (refreshing.value) {
       feedbackList.value = []
       refreshing.value = false
     }
     
-    // 确保data和records都存在
-    if (data && data.records) {
-      console.log(`服务器返回数据: 总数=${data.total}, 本页记录数=${data.records.length}`);
-      
-      // 如果返回的记录为空
-      if (data.records.length === 0) {
-        // 如果总数为0，说明没有数据
-        if (data.total === 0) {
-          console.log('没有反馈数据');
-          finished.value = true;
-        } 
-        // 如果不是第一页，且返回空数组，回到第一页重试
-        else if (pageNum.value > 1) {
-          console.log('页码过大，返回第一页');
-          pageNum.value = 1;
-          loading.value = false;
-          onLoad();
-          return;
-        } else {
-          console.log('数据异常: 总数不为0但返回空数组');
-          finished.value = true;
-        }
-      } else {
-        // 将日期从LocalDateTime格式转换为更友好的显示格式
-        const formattedRecords = data.records.map(item => ({
-          ...item,
-          createdAt: formatDateTime(item.createdAt)
-        }));
-        
-        // 添加数据到列表
-        feedbackList.value.push(...formattedRecords);
-        console.log('当前列表数据:', feedbackList.value);
-        
-        // 判断是否还有更多数据
-        if (feedbackList.value.length >= data.total) {
-          console.log('已加载全部数据，标记为finished');
-          finished.value = true;
-        } else {
-          // 增加页码
-          pageNum.value++;
-          console.log('还有更多数据，页码增加到:', pageNum.value);
-          finished.value = false;
-        }
-      }
-    } else {
-      console.error('响应数据格式不正确:', data);
-      finished.value = true;
+    if (data.records && data.records.length > 0) {
+      // 记录每个反馈的初始状态，用于检测变化
+      const initialSize = feedbackList.value.length
+      feedbackList.value.push(...data.records)
+      pageNum.value++
+    }
+    
+    loading.value = false
+    if (feedbackList.value.length >= data.total) {
+      finished.value = true
     }
   } catch (error) {
-    console.error('加载反馈列表失败:', error);
-    if (error.response) {
-      console.error('错误状态码:', error.response.status);
-      console.error('错误详情:', error.response.data);
-    }
-    
-    // 显示友好的错误信息
-    if (feedbackList.value.length === 0) {
-      showFailToast('获取反馈列表失败，请稍后重试');
-    }
-    finished.value = true;
-  } finally {
-    loading.value = false;
-  }
-}
-
-// 格式化日期时间
-const formatDateTime = (dateTimeStr: string): string => {
-  if (!dateTimeStr) return '';
-  
-  try {
-    const date = new Date(dateTimeStr);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
-  } catch (e) {
-    console.error('日期格式化错误:', e);
-    return dateTimeStr;
+    loading.value = false
+    showFailToast('加载失败，请重试')
   }
 }
 
@@ -320,6 +284,10 @@ const onRefresh = () => {
 
 // 查看反馈详情
 const goToDetail = (id: number) => {
+  // 将该反馈标记为已查看
+  viewedFeedbacks.add(id)
+  saveViewedFeedbacks()
+  
   router.push(`/feedback-detail/${id}`)
 }
 
@@ -345,7 +313,15 @@ const handleTabChange = (index: number) => {
   }
 }
 
+// 导航到指定路由
+const navigateTo = (route: string) => {
+  router.push(route)
+}
+
 onMounted(() => {
+  // 加载已查看的反馈记录
+  loadViewedFeedbacks()
+  
   // 先设置加载状态
   loading.value = true
   
@@ -368,7 +344,7 @@ onMounted(() => {
 <style scoped>
 .feedback-container {
   padding-top: 46px;
-  padding-bottom: 20px;
+  padding-bottom: 70px; /* 添加底部padding，为底部导航栏留出空间 */
   min-height: 100vh;
   background-color: #f7f8fa;
 }
@@ -379,6 +355,11 @@ onMounted(() => {
 
 .feedback-list {
   min-height: calc(100vh - 100px);
+}
+
+.status-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 .status {
@@ -407,6 +388,14 @@ onMounted(() => {
   color: #646566;
 }
 
+.new-reply-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ee0a24;
+  margin-left: 5px;
+}
+
 .feedback-select {
   width: 100%;
   height: 32px;
@@ -425,19 +414,6 @@ onMounted(() => {
   border-radius: 12px;
 }
 
-.picker-header {
-  text-align: center;
-  padding: 12px 0;
-  background-color: #f7f8fa;
-  border-bottom: 1px solid #ebedf0;
-}
-
-.picker-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #323233;
-}
-
 .loading-container {
   display: flex;
   justify-content: center;
@@ -453,5 +429,35 @@ onMounted(() => {
 .feedback-list {
   min-height: calc(100vh - 100px);
   padding-bottom: 20px;
+}
+
+.ios-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #e5e5e5;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+}
+
+.tab-item i {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.tab-item span {
+  font-size: 12px;
 }
 </style> 

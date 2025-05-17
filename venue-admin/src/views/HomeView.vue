@@ -18,6 +18,8 @@ import {
   Plus as IconPlus,
   List as IconList,
   Edit as IconEdit,
+  Message as IconMessage,
+  ChatLineRound as IconChatLineRound,
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -55,6 +57,8 @@ const handleRouteChange = () => {
     activeIndex.value = 'reviews'
   } else if (path.includes('/users')) {
     activeIndex.value = 'users'
+  } else if (path.includes('/feedback')) {
+    activeIndex.value = 'feedback'
   } else if (path.includes('/admin')) {
     activeIndex.value = 'admin'
   } else {
@@ -99,6 +103,9 @@ const handleMenuClick = (index: string) => {
       break
     case 'users':
       router.push('/home/users')
+      break
+    case 'feedback':
+      router.push('/home/feedback')
       break
     case 'admin':
       router.push('/admin')
@@ -181,6 +188,11 @@ const toggleCollapse = () => {
             <template #title>用户管理</template>
           </el-menu-item>
 
+          <el-menu-item index="feedback">
+            <el-icon><IconMessage /></el-icon>
+            <template #title>反馈管理</template>
+          </el-menu-item>
+
           <el-sub-menu index="review-manage">
             <template #title>
             <el-icon><IconChatDotRound /></el-icon>
@@ -236,6 +248,7 @@ const toggleCollapse = () => {
                 <el-breadcrumb-item v-else-if="activeIndex === 'venue-types'">场馆类型管理</el-breadcrumb-item>
                 <el-breadcrumb-item v-else-if="activeIndex === 'bookings'">预约列表</el-breadcrumb-item>
                 <el-breadcrumb-item v-else-if="activeIndex === 'users'">用户管理</el-breadcrumb-item>
+                <el-breadcrumb-item v-else-if="activeIndex === 'feedback'">反馈管理</el-breadcrumb-item>
               </el-breadcrumb>
             </div>
           </div>

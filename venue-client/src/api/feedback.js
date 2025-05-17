@@ -52,4 +52,18 @@ export function getUserFeedbackList(pageNum = 1, pageSize = 8) {
  */
 export function getFeedbackReplies(feedbackId) {
   return http.get(`/feedback/reply/list/${feedbackId}`)
+}
+
+/**
+ * 用户关闭反馈
+ * @param {number} id 反馈ID
+ * @returns {Promise}
+ */
+export function closeFeedback(id) {
+  return http.post('/user/feedback/update-status', null, {
+    params: {
+      id,
+      status: 3  // 3表示已关闭状态
+    }
+  })
 } 
