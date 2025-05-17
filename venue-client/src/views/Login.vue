@@ -69,6 +69,31 @@ const handleSubmit = async () => {
       remember: loginForm.value.remember,
     })
 
+    // 登录成功后打印token信息（仅用于调试）
+    const token = localStorage.getItem('userToken');
+    console.log('登录成功，Token长度:', token ? token.length : 0);
+    console.log('登录成功，Token前20字符:', token ? token.substring(0, 20) : 'null');
+    
+    // 解析JWT token并打印信息（仅用于调试）
+    if (token) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const base64Url = parts[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          
+          console.log('Token内容:', JSON.parse(jsonPayload));
+        } else {
+          console.warn('Token格式不是标准的JWT格式');
+        }
+      } catch (e) {
+        console.error('解析token失败，可能不是有效的JWT:', e);
+      }
+    }
+
     console.log('登录成功，准备跳转')
     // 检查是否有重定向参数
     const redirectPath = route.query.redirect as string || '/user'

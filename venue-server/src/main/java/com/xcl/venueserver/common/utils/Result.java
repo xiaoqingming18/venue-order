@@ -53,6 +53,28 @@ public class Result<T> implements Serializable {
     }
 
     /**
+     * 成功 - 带数据和消息
+     */
+    public static <T> Result<T> success(T data, String message) {
+        Result<T> result = new Result<>();
+        result.setCode(200);
+        result.setMessage(message);
+        result.setData(data);
+        return result;
+    }
+
+    /**
+     * 成功 - 布尔结果和消息
+     */
+    public static Result<Boolean> success(boolean success, String message) {
+        Result<Boolean> result = new Result<>();
+        result.setCode(200);
+        result.setMessage(message);
+        result.setData(success);
+        return result;
+    }
+
+    /**
      * 失败
      */
     public static <T> Result<T> error() {

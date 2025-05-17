@@ -125,7 +125,7 @@ onMounted(() => {
   
   // 如果URL中没有查询参数，则执行默认查询
   if (!route.query.keyword && !route.query.venueTypeId) {
-    fetchVenues()
+  fetchVenues()
   }
 })
 </script>

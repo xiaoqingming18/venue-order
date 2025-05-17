@@ -71,12 +71,7 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
         
-        <!-- Hutool工具�?-->
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.8.11</version>
-        </dependency>
+        <!-- Hutool工具包 -->        <dependency>            <groupId>cn.hutool</groupId>            <artifactId>hutool-all</artifactId>            <version>5.8.11</version>        </dependency>
         
         <!-- 参数校验 -->
         <dependency>
@@ -91,14 +86,16 @@
             <version>7.1.0</version>
         </dependency>
         
-        <!-- OkHttp 兼容MinIO客户�?-->
+                <!-- OkHttp 兼容MinIO客户端 -->        <dependency>            <groupId>com.squareup.okhttp3</groupId>            <artifactId>okhttp</artifactId>            <version>3.14.9</version>        </dependency>
+
+        <!-- Apache Commons Lang3 -->
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.14.9</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
         </dependency>
 
-        <!--引入支付宝支�?-->
+        <!--引入支付宝支付-->
         <dependency>
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay-easysdk</artifactId>

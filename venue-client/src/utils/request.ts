@@ -22,7 +22,20 @@ request.interceptors.request.use(
       // 如果有token则在header中添加token
       if (token) {
         config.headers['Authorization'] = `Bearer ${token}`
-        console.log('请求添加了认证信息:', `Bearer ${token.substring(0, 10)}...`);
+        console.log('请求添加了认证信息:', `Bearer ${token.substring(0, 10)}...`, '完整token长度:', token.length);
+        
+        // 解析JWT token并打印信息（仅用于调试）
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          
+          console.log('Token内容:', JSON.parse(jsonPayload));
+        } catch (e) {
+          console.error('解析token失败，可能不是有效的JWT:', e);
+        }
       } else {
         console.warn('警告: 未找到认证Token, 请求可能会被拒绝');
       }

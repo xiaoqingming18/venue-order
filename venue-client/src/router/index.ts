@@ -97,6 +97,33 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    // 用户反馈相关路由
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: () => import('../views/user/Feedback.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/feedback-detail/:id',
+      name: 'feedbackDetail',
+      component: () => import('../views/user/FeedbackDetail.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+      props: true,
+    },
+    // 用户消息相关路由
+    {
+      path: '/message',
+      name: 'message',
+      component: () => import('../views/user/Message.vue'),
+      meta: {
+        requiresAuth: true,
+      },
+    },
     // 订单相关路由
     {
       path: '/orders',

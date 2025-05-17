@@ -97,3 +97,90 @@ a {
     padding-bottom: max(0px, env(safe-area-inset-bottom));
   }
 }
+
+/* 全局样式 */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+/* 模拟Vant组件样式 */
+.mock-vant-form {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.mock-vant-cellgroup {
+  margin-bottom: 16px;
+}
+
+.mock-vant-field, .mock-vant-cell {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #ebedf0;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.mock-vant-pullrefresh {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.mock-vant-list {
+  min-height: 200px;
+}
+
+.mock-vant-empty {
+  padding: 40px 0;
+  text-align: center;
+  color: #969799;
+}
+
+.mock-vant-navbar {
+  display: flex;
+  height: 46px;
+  line-height: 46px;
+  padding: 0 16px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 10;
+}
+
+/* 避免内容被固定头部遮挡 */
+.page-container {
+  padding-top: 46px;
+}
+
+/* 通用间距 */
+.mt-16 {
+  margin-top: 16px;
+}
+
+.mb-16 {
+  margin-bottom: 16px;
+}
+
+.p-16 {
+  padding: 16px;
+}
+
+/* 卡片样式 */
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  padding: 16px;
+}

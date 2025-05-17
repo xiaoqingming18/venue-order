@@ -41,6 +41,20 @@ const menuItems = [
     route: '/my-favorites'
   },
   {
+    id: 'feedback',
+    title: '问题反馈',
+    icon: 'comment-dots',
+    color: '#E6A23C',
+    route: '/feedback'
+  },
+  {
+    id: 'message',
+    title: '我的消息',
+    icon: 'bell',
+    color: '#F56C6C',
+    route: '/message'
+  },
+  {
     id: 'settings',
     title: '账号设置',
     icon: 'cog',
