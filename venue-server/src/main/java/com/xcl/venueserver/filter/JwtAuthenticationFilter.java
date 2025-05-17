@@ -1,5 +1,6 @@
 package com.xcl.venueserver.filter;
 
+import com.xcl.venueserver.common.utils.CurrentUser;
 import com.xcl.venueserver.common.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final CurrentUser currentUser;
     
     // 不需要验证token的路径
     private static final List<String> EXCLUDE_PATHS = Arrays.asList(
@@ -48,8 +50,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
-    public JwtAuthenticationFilter(JwtUtils jwtUtils) {
+    public JwtAuthenticationFilter(JwtUtils jwtUtils, CurrentUser currentUser) {
         this.jwtUtils = jwtUtils;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -86,6 +89,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("{\"code\":401,\"message\":\"未授权，请先登录: " + errorMsg + "\",\"data\":null}");
             return;
+        }
+        
+        // token有效，设置用户信息到CurrentUser中
+        try {
+            Long userId = jwtUtils.getUserIdFromToken(token);
+            String username = jwtUtils.getUsernameFromToken(token);
+            Integer role = jwtUtils.getRoleFromToken(token);
+            
+            // 将用户信息设置到CurrentUser中
+            currentUser.setCurrentUserId(userId);
+            currentUser.setCurrentUsername(username);
+            currentUser.setCurrentUserRole(role);
+            
+            log.debug("JWT验证通过，已设置用户信息到CurrentUser: userId={}, username={}, role={}", userId, username, role);
+        } catch (Exception e) {
+            log.error("设置用户信息到CurrentUser失败", e);
         }
         
         // token有效，放行请求

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch, provide } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch, provide } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox, ElDialog } from 'element-plus'
 import dayjs from 'dayjs'
 import { getVenueById, getVenueFacilities, getVenueAvailabilityPublic, getVenueLocations } from '@/api/venue'
 import { getVenueAvailability, createBooking, getSpecialDateRules, getBookingRulesByType, payBookingWithAlipay } from '@/api/booking'
+import { recordBrowseHistory } from '@/api/recommendation'
 import type { Venue, VenueFacility, VenueLocation } from '@/types/venue'
 import type { TimeSlot, BookingOrderDTO, SpecialDateRule, BookingRule } from '@/types/booking'
 import { useUserStore } from '@/stores/user'
@@ -110,6 +111,19 @@ const availableEndTimes = computed(() => {
   return times
 })
 
+// 记录页面停留的开始时间
+const pageStartTime = ref(Date.now())
+
+// 记录浏览历史
+const recordVenueBrowse = (stayDuration = 0) => {
+  if (!venueId.value || !userStore.isLoggedIn) return
+  
+  console.log(`记录场馆${venueId.value}浏览历史(预约页面)，停留时间：${stayDuration}秒`)
+  recordBrowseHistory(venueId.value, stayDuration, 3) // 3表示其他场馆跳转
+    .then(() => console.log('预约页面浏览历史记录成功'))
+    .catch(error => console.error('记录预约页面浏览历史失败', error))
+}
+
 // 获取场馆详细信息
 const fetchVenueDetail = async () => {
   loading.value = true
@@ -118,6 +132,9 @@ const fetchVenueDetail = async () => {
     const res = await getVenueById(venueId.value)
     console.log('获取到场馆详情:', res.data)
     venueInfo.value = res.data
+
+    // 记录浏览历史（初次进入页面）
+    recordVenueBrowse(0)
 
     // 获取场馆设施
     console.log(`获取场馆${venueId.value}设施列表`)
@@ -755,6 +772,13 @@ onMounted(() => {
   setTimeout(() => {
     openRuleDialog(true)
   }, 500)
+})
+
+// 页面离开时记录浏览历史
+onUnmounted(() => {
+  // 计算停留时间
+  const stayDuration = Math.floor((Date.now() - pageStartTime.value) / 1000)
+  recordVenueBrowse(stayDuration)
 })
 </script>
 

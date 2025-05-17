@@ -111,40 +111,40 @@ public class UserFeedbackServiceImpl extends ServiceImpl<UserFeedbackMapper, Use
             }
             
             // 2. 只查询必要的字段并使用分页
-            LambdaQueryWrapper<UserFeedback> queryWrapper = Wrappers.<UserFeedback>lambdaQuery()
+        LambdaQueryWrapper<UserFeedback> queryWrapper = Wrappers.<UserFeedback>lambdaQuery()
                 .eq(UserFeedback::getUserId, userId)
                 .select(UserFeedback::getId, UserFeedback::getUserId, UserFeedback::getType, 
                         UserFeedback::getTitle, UserFeedback::getStatus, UserFeedback::getCreatedAt)
                 .orderByDesc(UserFeedback::getCreatedAt);
-            
+        
             // 使用原生分页方式
             long current = page.getCurrent();
             long size = page.getSize();
             long offset = (current - 1) * size;
             
             // 直接使用mp的分页插件
-            Page<UserFeedback> feedbackPage = page(page, queryWrapper);
-            
+        Page<UserFeedback> feedbackPage = page(page, queryWrapper);
+        
             // 记录查询结果
             log.info("查询结果: 总数={}, 当前页记录数={}", 
                 feedbackPage.getTotal(), feedbackPage.getRecords().size());
             
             // 3. 转换为VO
-            Page<UserFeedbackVO> voPage = new Page<>();
-            BeanUtils.copyProperties(feedbackPage, voPage, "records");
+        Page<UserFeedbackVO> voPage = new Page<>();
+        BeanUtils.copyProperties(feedbackPage, voPage, "records");
             
             if (feedbackPage.getRecords().isEmpty()) {
                 voPage.setRecords(new ArrayList<>());
                 return voPage;
             }
-            
-            List<UserFeedbackVO> voList = feedbackPage.getRecords().stream()
+        
+        List<UserFeedbackVO> voList = feedbackPage.getRecords().stream()
                 .map(this::convertSimpleVO)
                 .collect(Collectors.toList());
-            
-            voPage.setRecords(voList);
+        
+        voPage.setRecords(voList);
             log.info("返回VO对象: 总数={}, 记录数={}", voPage.getTotal(), voList.size());
-            return voPage;
+        return voPage;
         } catch (Exception e) {
             log.error("获取用户反馈列表失败", e);
             // 出错时返回空页面

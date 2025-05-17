@@ -1,6 +1,6 @@
 <template>
   <div class="message-container">
-    <van-nav-bar
+    <van-nav-bar 
       title="消息中心"
       left-arrow
       @click-left="goBack"
@@ -20,35 +20,35 @@
         >
           <template v-if="!loading">
             <van-empty v-if="messageList.length === 0" description="暂无消息" />
-            
+          
             <div v-else>
-              <van-swipe-cell
-                v-for="item in messageList"
-                :key="item.id"
+          <van-swipe-cell
+            v-for="item in messageList"
+            :key="item.id"
                 :name="item.id"
-                :before-close="beforeClose"
-              >
-                <van-cell
+            :before-close="beforeClose"
+          >
+            <van-cell
                   :class="{ unread: item.isRead === 0 }"
-                  :title="item.title"
-                  :label="item.createdAt"
-                  @click="handleReadMessage(item)"
-                >
-                  <template #value>
-                    <span class="message-type">{{ item.typeName }}</span>
-                  </template>
-                </van-cell>
+              :title="item.title"
+              :label="item.createdAt"
+              @click="handleReadMessage(item)"
+            >
+              <template #value>
+                <span class="message-type">{{ item.typeName }}</span>
+              </template>
+            </van-cell>
                 
-                <template #right>
-                  <van-button 
-                    square 
-                    text="删除" 
-                    type="danger" 
-                    class="delete-button" 
+            <template #right>
+              <van-button
+                square
+                text="删除"
+                type="danger"
+                class="delete-button"
                     @click="showDeleteDialog(item.id)"
-                  />
-                </template>
-              </van-swipe-cell>
+              />
+            </template>
+          </van-swipe-cell>
             </div>
           </template>
         </van-list>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getVenueById, getVenueFacilities, getVenueLocations } from '@/api/venue'
 import { getVenueReviews, getVenueReviewStats, reportReview, replyReview } from '@/api/review'
 import { addFavorite, removeFavorite, checkIsFavorite } from '@/api/favorite'
+import { recordBrowseHistory } from '@/api/recommendation'
 import type { Venue, VenueFacility, VenueLocation } from '@/types/venue'
 import type { Review, ReviewStats } from '@/types/review'
 import { useUserStore } from '@/stores/user'
@@ -72,6 +73,19 @@ const isVenueOwner = computed(() => {
 const isLoggedIn = computed(() => {
   return userStore.isLoggedIn
 })
+
+// 记录页面停留的开始时间
+const pageStartTime = ref(Date.now())
+
+// 记录浏览历史
+const recordVenueBrowse = (stayDuration = 0) => {
+  if (!venueId.value || !userStore.isLoggedIn) return
+  
+  console.log(`记录场馆${venueId.value}浏览历史，停留时间：${stayDuration}秒`)
+  recordBrowseHistory(venueId.value, stayDuration, 2) // 2表示分类浏览
+    .then(() => console.log('浏览历史记录成功'))
+    .catch(error => console.error('记录浏览历史失败', error))
+}
 
 // 获取场馆详细信息
 const fetchVenueDetail = async () => {
@@ -446,6 +460,9 @@ const toggleFavorite = async () => {
 onMounted(async () => {
   await fetchVenueDetail()
   
+  // 记录浏览历史（初次进入页面）
+  recordVenueBrowse(0)
+  
   // 如果用户已登录，检查该场馆是否已收藏
   if (userStore.isLoggedIn) {
     checkFavoriteStatus()
@@ -456,6 +473,13 @@ onMounted(async () => {
     fetchVenueReviews()
     fetchReviewStats()
   }
+})
+
+// 页面离开时记录浏览历史
+onUnmounted(() => {
+  // 计算停留时间
+  const stayDuration = Math.floor((Date.now() - pageStartTime.value) / 1000)
+  recordVenueBrowse(stayDuration)
 })
 
 // 监听标签页变化

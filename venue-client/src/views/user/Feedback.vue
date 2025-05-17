@@ -83,24 +83,24 @@
               @load="onLoad"
             >
               <template v-if="!loading">
-                <van-empty v-if="feedbackList.length === 0" description="暂无反馈记录" />
-                
+              <van-empty v-if="feedbackList.length === 0" description="暂无反馈记录" />
+              
                 <div v-else class="feedback-items">
-                  <van-cell
-                    v-for="item in feedbackList"
-                    :key="item.id"
-                    :title="item.title"
-                    :label="item.createdAt"
-                    is-link
-                    @click="goToDetail(item.id)"
-                  >
-                    <template #value>
+              <van-cell
+                v-for="item in feedbackList"
+                :key="item.id"
+                :title="item.title"
+                :label="item.createdAt"
+                is-link
+                @click="goToDetail(item.id)"
+              >
+                <template #value>
                       <div class="status-wrapper">
-                        <span :class="['status', 'status-' + item.status]">{{ item.statusName }}</span>
+                  <span :class="['status', 'status-' + item.status]">{{ item.statusName }}</span>
                         <span v-if="item.status === 2 && !viewedFeedbacks.has(item.id)" class="new-reply-dot"></span>
                       </div>
-                    </template>
-                  </van-cell>
+                </template>
+              </van-cell>
                 </div>
               </template>
               
@@ -333,7 +333,7 @@ onMounted(() => {
   // 如果当前标签是"我的反馈"，则自动加载数据
   if (active.value === 1) {
     setTimeout(() => {
-      onLoad()
+  onLoad()
     }, 100)
   } else {
     loading.value = false
