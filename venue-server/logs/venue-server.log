@@ -5963,3 +5963,111 @@ CREATE TABLE `recommendation_feedback` (
 2025-05-18 02:01:46.346 INFO  [main] com.xcl.venueserver.util.SqlTestUtil - venue_location表已包含price字段，无需更新
 2025-05-18 02:01:46.349 INFO  [main] com.xcl.venueserver.util.SqlTestUtil - venue_facility表已包含price字段，无需更新
 2025-05-18 02:01:46.350 INFO  [main] com.xcl.venueserver.util.SqlTestUtil - 数据库表结构检查和更新完成
+2025-05-18 02:16:17.430 INFO  [http-nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-05-18 02:16:17.432 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-05-18 02:16:17.449 INFO  [http-nio-8081-exec-1] o.s.web.servlet.DispatcherServlet - Completed initialization in 17 ms
+2025-05-18 02:16:17.462 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venues/7, 方法: GET
+2025-05-18 02:16:17.464 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venues/7]是否在白名单中
+2025-05-18 02:16:17.465 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venues/7], 带API前缀=[/api/api/venues/7], 不带API前缀=[/venues/7]
+2025-05-18 02:16:17.466 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venues/7 不在白名单中，需要验证token
+2025-05-18 02:16:17.467 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:17.589 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:17.590 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venues/7
+2025-05-18 02:16:17.846 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue-facilities/venue/7, 方法: GET
+2025-05-18 02:16:17.847 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue-facilities/venue/7]是否在白名单中
+2025-05-18 02:16:17.847 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue-facilities/venue/7], 带API前缀=[/api/api/venue-facilities/venue/7], 不带API前缀=[/venue-facilities/venue/7]
+2025-05-18 02:16:17.848 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue-facilities/venue/7 直接匹配白名单模式 /api/venue-facilities/venue/*
+2025-05-18 02:16:17.848 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 路径/api/venue-facilities/venue/7在白名单中，无需验证token
+2025-05-18 02:16:17.963 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue-locations/venue/7, 方法: GET
+2025-05-18 02:16:17.964 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue-locations/venue/7]是否在白名单中
+2025-05-18 02:16:17.964 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue-locations/venue/7], 带API前缀=[/api/api/venue-locations/venue/7], 不带API前缀=[/venue-locations/venue/7]
+2025-05-18 02:16:17.964 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue-locations/venue/7 不在白名单中，需要验证token
+2025-05-18 02:16:17.964 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:17.975 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:17.975 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue-locations/venue/7
+2025-05-18 02:16:18.011 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/user/favorite/check/7, 方法: GET
+2025-05-18 02:16:18.012 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/user/favorite/check/7]是否在白名单中
+2025-05-18 02:16:18.012 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/user/favorite/check/7], 带API前缀=[/api/api/user/favorite/check/7], 不带API前缀=[/user/favorite/check/7]
+2025-05-18 02:16:18.013 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/user/favorite/check/7 不在白名单中，需要验证token
+2025-05-18 02:16:18.013 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:18.021 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue/recommendation/history, 方法: POST
+2025-05-18 02:16:18.021 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue/recommendation/history]是否在白名单中
+2025-05-18 02:16:18.021 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue/recommendation/history], 带API前缀=[/api/api/venue/recommendation/history], 不带API前缀=[/venue/recommendation/history]
+2025-05-18 02:16:18.022 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue/recommendation/history 不在白名单中，需要验证token
+2025-05-18 02:16:18.022 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:18.024 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:18.024 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/user/favorite/check/7
+2025-05-18 02:16:18.038 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:18.039 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue/recommendation/history
+2025-05-18 02:16:18.147 INFO  [http-nio-8081-exec-4] c.x.v.s.i.VenueRecommendationServiceImpl - 更新用户10006对场馆7的偏好数据
+2025-05-18 02:16:18.160 INFO  [http-nio-8081-exec-4] c.x.v.s.i.VenueRecommendationServiceImpl - 创建用户10006对场馆7的偏好数据，初始偏好分数：0.5
+2025-05-18 02:16:19.436 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/user/favorite/add, 方法: POST
+2025-05-18 02:16:19.436 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/user/favorite/add]是否在白名单中
+2025-05-18 02:16:19.436 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/user/favorite/add], 带API前缀=[/api/api/user/favorite/add], 不带API前缀=[/user/favorite/add]
+2025-05-18 02:16:19.436 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/user/favorite/add 不在白名单中，需要验证token
+2025-05-18 02:16:19.436 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:19.440 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:19.441 DEBUG [http-nio-8081-exec-6] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/user/favorite/add
+2025-05-18 02:16:26.551 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue/recommendation/history, 方法: POST
+2025-05-18 02:16:26.552 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue/recommendation/history]是否在白名单中
+2025-05-18 02:16:26.552 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue/recommendation/history], 带API前缀=[/api/api/venue/recommendation/history], 不带API前缀=[/venue/recommendation/history]
+2025-05-18 02:16:26.552 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue/recommendation/history 不在白名单中，需要验证token
+2025-05-18 02:16:26.552 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue/types/all, 方法: GET
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue/recommendation/personalized, 方法: GET
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue/types/all]是否在白名单中
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue/recommendation/personalized]是否在白名单中
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue/types/all], 带API前缀=[/api/api/venue/types/all], 不带API前缀=[/venue/types/all]
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue/recommendation/personalized], 带API前缀=[/api/api/venue/recommendation/personalized], 不带API前缀=[/venue/recommendation/personalized]
+2025-05-18 02:16:26.554 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue/types/all 不在白名单中，需要验证token
+2025-05-18 02:16:26.555 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:26.555 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue/recommendation/personalized 不在白名单中，需要验证token
+2025-05-18 02:16:26.555 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:26.559 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:26.560 DEBUG [http-nio-8081-exec-8] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue/recommendation/history
+2025-05-18 02:16:26.562 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:26.562 DEBUG [http-nio-8081-exec-7] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue/recommendation/personalized
+2025-05-18 02:16:26.562 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:26.563 DEBUG [http-nio-8081-exec-9] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue/types/all
+2025-05-18 02:16:26.565 INFO  [http-nio-8081-exec-8] c.x.v.s.i.VenueRecommendationServiceImpl - 更新用户10006对场馆7的偏好数据
+2025-05-18 02:16:26.572 INFO  [http-nio-8081-exec-8] c.x.v.s.i.VenueRecommendationServiceImpl - 更新用户10006对场馆7的偏好数据，浏览次数：2，偏好分数：1.0
+2025-05-18 02:16:26.599 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue/types/all, 方法: GET
+2025-05-18 02:16:26.599 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue/types/all]是否在白名单中
+2025-05-18 02:16:26.599 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue/types/all], 带API前缀=[/api/api/venue/types/all], 不带API前缀=[/venue/types/all]
+2025-05-18 02:16:26.599 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue/types/all 不在白名单中，需要验证token
+2025-05-18 02:16:26.599 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:26.607 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:26.607 DEBUG [http-nio-8081-exec-10] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue/types/all
+2025-05-18 02:16:26.609 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venues, 方法: GET
+2025-05-18 02:16:26.610 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venues]是否在白名单中
+2025-05-18 02:16:26.610 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venues], 带API前缀=[/api/api/venues], 不带API前缀=[/venues]
+2025-05-18 02:16:26.610 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venues 不在白名单中，需要验证token
+2025-05-18 02:16:26.610 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:26.621 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:26.622 DEBUG [http-nio-8081-exec-1] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venues
+2025-05-18 02:16:31.787 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/user/favorite/page, 方法: GET
+2025-05-18 02:16:31.787 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/user/favorite/page]是否在白名单中
+2025-05-18 02:16:31.787 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/user/favorite/page], 带API前缀=[/api/api/user/favorite/page], 不带API前缀=[/user/favorite/page]
+2025-05-18 02:16:31.787 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/user/favorite/page 不在白名单中，需要验证token
+2025-05-18 02:16:31.787 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:31.794 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:31.794 DEBUG [http-nio-8081-exec-2] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/user/favorite/page
+2025-05-18 02:16:34.413 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venues/7, 方法: GET
+2025-05-18 02:16:34.414 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venues/7]是否在白名单中
+2025-05-18 02:16:34.414 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venues/7], 带API前缀=[/api/api/venues/7], 不带API前缀=[/venues/7]
+2025-05-18 02:16:34.414 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venues/7 不在白名单中，需要验证token
+2025-05-18 02:16:34.414 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:34.418 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:34.419 DEBUG [http-nio-8081-exec-3] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venues/7
+2025-05-18 02:16:34.428 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue-facilities/venue/7, 方法: GET
+2025-05-18 02:16:34.429 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue-facilities/venue/7]是否在白名单中
+2025-05-18 02:16:34.429 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue-facilities/venue/7], 带API前缀=[/api/api/venue-facilities/venue/7], 不带API前缀=[/venue-facilities/venue/7]
+2025-05-18 02:16:34.429 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue-facilities/venue/7 直接匹配白名单模式 /api/venue-facilities/venue/*
+2025-05-18 02:16:34.429 DEBUG [http-nio-8081-exec-5] c.x.v.filter.JwtAuthenticationFilter - 路径/api/venue-facilities/venue/7在白名单中，无需验证token
+2025-05-18 02:16:34.440 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - JWT过滤器处理请求路径: /api/venue-locations/venue/7, 方法: GET
+2025-05-18 02:16:34.440 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 开始判断路径[/api/venue-locations/venue/7]是否在白名单中
+2025-05-18 02:16:34.440 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 标准化路径：原始=[/api/venue-locations/venue/7], 带API前缀=[/api/api/venue-locations/venue/7], 不带API前缀=[/venue-locations/venue/7]
+2025-05-18 02:16:34.440 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 路径 /api/venue-locations/venue/7 不在白名单中，需要验证token
+2025-05-18 02:16:34.440 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - 从请求头中获取token: Authorization = Bearer eyJhbGciOiJIU...
+2025-05-18 02:16:34.447 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - JWT验证通过，已设置用户信息到CurrentUser: userId=10006, username=BirdSuper, role=1
+2025-05-18 02:16:34.447 DEBUG [http-nio-8081-exec-4] c.x.v.filter.JwtAuthenticationFilter - token验证通过，继续处理请求: /api/venue-locations/venue/7
