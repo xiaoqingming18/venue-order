@@ -15,6 +15,19 @@ export function getHomeRecommendations(limit = 6) {
 }
 
 /**
+ * 获取用户个性化推荐场馆
+ * @param limit 限制数量
+ * @returns 个性化推荐场馆列表
+ */
+export function getRecommendedVenues(limit = 8) {
+  return request({
+    url: '/venue/recommendation/personalized',
+    method: 'get',
+    params: { limit }
+  })
+}
+
+/**
  * 获取相似场馆推荐
  * @param venueId 当前场馆ID
  * @param limit 限制数量
