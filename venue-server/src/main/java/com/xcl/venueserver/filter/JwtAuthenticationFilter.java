@@ -34,6 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/venues/*/availability",
             "/api/venue-facilities/venue/*",
             "/api/venues/search",  // 场馆搜索接口
+            "/venues/search",      // 场馆搜索接口 - 不带/api前缀
+            "/*/venues/search",    // 场馆搜索接口 - 通配符匹配前缀
             "/api/alipay/notify",  // 支付宝异步回调接口
             "/api/alipay/return",  // 支付宝同步回调接口
             "/api/alipay/test",    // 支付宝测试接口
@@ -95,12 +97,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * 判断是否是排除的路径
      */
     private boolean isExcludePath(String path) {
+        log.debug("开始判断路径[{}]是否在白名单中", path);
+        
+        // 去除前导斜杠后的路径，用于兼容不同格式的URL
+        String normalizedPath = path;
+        if (normalizedPath.startsWith("/")) {
+            normalizedPath = normalizedPath.substring(1);
+        }
+        
+        // 尝试增加和去除/api前缀的匹配
+        String withApiPrefix = "/api/" + normalizedPath;
+        String withoutApiPrefix = normalizedPath.startsWith("api/") ? "/" + normalizedPath.substring(4) : "/" + normalizedPath;
+        
+        log.debug("标准化路径：原始=[{}], 带API前缀=[{}], 不带API前缀=[{}]", path, withApiPrefix, withoutApiPrefix);
+        
+        // 首先尝试直接匹配
         for (String pattern : EXCLUDE_PATHS) {
             if (pathMatcher.match(pattern, path)) {
-                log.debug("路径 {} 匹配白名单模式 {}", path, pattern);
+                log.debug("路径 {} 直接匹配白名单模式 {}", path, pattern);
+                return true;
+            }
+            
+            // 尝试匹配带API前缀的路径
+            if (pathMatcher.match(pattern, withApiPrefix)) {
+                log.debug("路径 {} (转换为 {}) 匹配白名单模式 {}", path, withApiPrefix, pattern);
+                return true;
+            }
+            
+            // 尝试匹配不带API前缀的路径
+            if (pathMatcher.match(pattern, withoutApiPrefix)) {
+                log.debug("路径 {} (转换为 {}) 匹配白名单模式 {}", path, withoutApiPrefix, pattern);
                 return true;
             }
         }
+        
+        // 特殊处理场馆搜索接口
+        if (path.endsWith("/venues/search") || path.contains("/venues/search?")) {
+            log.debug("特殊处理：路径 {} 是场馆搜索接口，放行", path);
+            return true;
+        }
+        
         log.debug("路径 {} 不在白名单中，需要验证token", path);
         return false;
     }

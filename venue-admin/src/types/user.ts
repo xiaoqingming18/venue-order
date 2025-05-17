@@ -46,3 +46,65 @@ export interface LoginResult {
   token: string
   username: string
 }
+
+/**
+ * 用户查询参数
+ */
+export interface UserQueryParams {
+  username?: string
+  nickname?: string
+  phone?: string
+  email?: string
+  status?: number
+  role?: number
+  current?: number
+  size?: number
+  orderField?: string
+  orderType?: 'asc' | 'desc'
+}
+
+/**
+ * 分页结果类型
+ */
+export interface PageResult<T> {
+  records: T[]
+  total: number
+  size: number
+  current: number
+  pages: number
+}
+
+/**
+ * 用户添加参数
+ */
+export interface UserAddParams {
+  username: string
+  password: string
+  confirmPassword: string
+  email?: string
+  phone?: string
+  nickname?: string
+  avatar?: string
+  gender?: string
+  birthday?: string
+  address?: string
+  status?: number
+  role?: number
+}
+
+/**
+ * 用户编辑参数
+ */
+export interface UserEditParams {
+  id: number
+  email?: string
+  phone?: string
+  nickname?: string
+  avatar?: string
+  gender?: string
+  birthday?: string
+  address?: string
+  status?: number
+  role?: number
+  newPassword?: string
+}
